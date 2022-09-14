@@ -1,4 +1,4 @@
-<mxfile host="app.diagrams.net" modified="2022-09-14T14:30:53.121Z" agent="5.0 (iPad; CPU OS 15_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Mobile/15E148 Safari/604.1" etag="fo941_GqYJITISLLwTJq" version="20.3.0" type="github" pages="2">
+<mxfile host="app.diagrams.net" modified="2022-09-14T14:52:39.464Z" agent="5.0 (iPad; CPU OS 15_6_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Mobile/15E148 Safari/604.1" etag="4SXLDLt3AGniftWbxiqB" version="20.3.0" type="github" pages="3">
   <diagram id="TTX6n0Y7mzK5cYTL0D-u" name="Architecture ">
     <mxGraphModel dx="1155" dy="840" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#F1FAEE" math="0" shadow="0">
       <root>
@@ -140,6 +140,27 @@
         </mxCell>
         <mxCell id="zkSBI4xJ6FrYe-AdQx25-23" value="&lt;p style=&quot;margin: 0px; font-stretch: normal; line-height: normal; text-align: start; -webkit-text-size-adjust: auto; font-size: 16px;&quot; class=&quot;p1&quot;&gt;&lt;span class=&quot;s1&quot;&gt;&lt;font style=&quot;font-size: 16px;&quot;&gt;“ひ&lt;/font&gt;&lt;/span&gt;&lt;span style=&quot;&quot; class=&quot;s1&quot;&gt;”&lt;/span&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
           <mxGeometry x="300" y="290" width="60" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="BlyysfrQwkLH1c9cHI49" name="Page-3">
+    <mxGraphModel dx="847" dy="616" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="WK-R6pOWSD38eVhN0J8N-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=16;" edge="1" parent="1" source="c-xAIKvrE92fFmrSfA3p-3" target="c-xAIKvrE92fFmrSfA3p-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="270" y="130" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="c-xAIKvrE92fFmrSfA3p-3" value="Page: Quiz&lt;br&gt;State: solution: Kana, choices: Array&amp;lt;Kana&amp;gt;, notifications: string" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="400" y="70" width="370" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="c-xAIKvrE92fFmrSfA3p-4" value="Component: AnswerInput&lt;br&gt;State: numTries" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="110" y="390" width="320" height="200" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
