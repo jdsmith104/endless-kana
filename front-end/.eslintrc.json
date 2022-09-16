@@ -1,0 +1,41 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": ["airbnb", "airbnb-typescript"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "project": "./tsconfig.json"
+  },
+
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"] // Your TypeScript files extension,
+    }
+  ],
+
+  "plugins": ["react", "@typescript-eslint"],
+  "rules": {
+    "semi": [2, "always"],
+    "object-curly-newline": "off",
+    "max-len": [2, 150],
+    "implicit-arrow-linebreak": ["off", "error", "below"],
+    "function-paren-newline": "off",
+    "no-confusing-arrow": [
+      "off",
+      {
+        "allowParens": true,
+        "onlyOneSimpleParam": true
+      }
+    ],
+    "operator-linebreak": [0, "warn"],
+    "react/jsx-one-expression-per-line": "off",
+    "eol-last": [0, "never"]
+  }
+}

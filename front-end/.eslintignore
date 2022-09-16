@@ -1,0 +1,12 @@
+# Ignore artifacts:
+build
+coverage
+
+**/*.js
+src/service-worker.ts
+src/serviceWorkerRegistration.ts
+src/setupTests.ts
+
+capacitor.config.ts
+
+index.tsx
