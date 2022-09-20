@@ -85,7 +85,7 @@ describe('addKana', () => {
       getHeader: (value: any) => {},
       set: (val1: any, val2: any) => {},
       status: (payload: number) => {
-        expect(payload).toBe(400);
+        expect(payload).toBe(200);
       },
       json: (payload: any) => {
         expect(payload.result).toBe('Request invalid: kana not added');
@@ -108,7 +108,7 @@ describe('addKana', () => {
 
       // Expected to be called in return
       status: (payload: number) => {
-        expect(payload).toBe(400);
+        expect(payload).toBe(200);
       },
       json: (payload: any) => {
         // If this fails, the program exits instead of failing the test
@@ -130,7 +130,7 @@ describe('getKanas', () => {
       getHeader: (value: any) => {},
       set: (val1: any, val2: any) => {},
       status: (payload: number) => {
-        expect(payload).toBe(400);
+        expect(payload).toBe(200);
       },
       json: (payload: any) => {
         expect(payload.result.length).toBe(0);
@@ -149,7 +149,7 @@ describe('getKanas', () => {
       getHeader: (value: any) => {},
       set: (val1: any, val2: any) => {},
       status: (payload: number) => {
-        expect(payload).toBe(400);
+        expect(payload).toBe(200);
       },
       json: (payload: any) => {
         expect(payload.result.length).toBe(9);
