@@ -1,7 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import './Home.css';
 import React, { useEffect } from 'react';
-import getKanas from './kana.controller';
+import getKanas from './kanas.controller';
 
 const Home = function Home() {
   let kanas: Array<any> = [];
