@@ -13,6 +13,7 @@ const cors = require('cors')({origin: true});
 exports.addKana = functions.https.onRequest(async (req: Request, res: Response) => {
   cors(req, res, async () => {
     try {
+      // Todo: Check request type
       if (isValidQuery(req.query)) {
         // Do Kana procesing
         const kana: Kana = req.query as unknown as Kana;
@@ -37,6 +38,7 @@ exports.addKana = functions.https.onRequest(async (req: Request, res: Response) 
 exports.getKanas = functions.https.onRequest(async (req: Request, res: Response) => {
   cors(req, res, async () => {
     try {
+      // Todo: Check request type
       // Get database snapshot
       const querySnapshot: FirebaseFirestore.QuerySnapshot = await db
         .collection('kanas')
