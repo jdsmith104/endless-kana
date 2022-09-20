@@ -1,3 +1,4 @@
+/* eslint-disable quote-props */
 module.exports = {
   root: true,
   env: {
@@ -18,7 +19,6 @@ module.exports = {
     sourceType: 'module',
     tsconfigRootDir: __dirname,
   },
-  include: ['**/*.ts', '**/*.js'],
   ignorePatterns: [
     '/lib/**/*', // Ignore built files.
   ],
@@ -44,5 +44,6 @@ module.exports = {
     'eol-last': [0, 'never'],
     'object-curly-spacing': [2, 'never'],
     '@typescript-eslint/no-var-requires': ['error'],
+    indent: ['warn', 2],
   },
 };
