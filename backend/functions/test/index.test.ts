@@ -83,6 +83,7 @@ describe('addKana', () => {
     const res = {
       setHeader: (key: any, value: any) => {},
       getHeader: (value: any) => {},
+      set: (val1: any, val2: any) => {},
       status: (payload: number) => {
         expect(payload).toBe(400);
       },
@@ -103,6 +104,7 @@ describe('addKana', () => {
       // Required for cors
       setHeader: (key: any, value: any) => {},
       getHeader: (value: any) => {},
+      set: (val1: any, val2: any) => {},
 
       // Expected to be called in return
       status: (payload: number) => {
@@ -126,6 +128,7 @@ describe('getKanas', () => {
     const res = {
       setHeader: (key: any, value: any) => {},
       getHeader: (value: any) => {},
+      set: (val1: any, val2: any) => {},
       status: (payload: number) => {
         expect(payload).toBe(400);
       },
@@ -144,6 +147,7 @@ describe('getKanas', () => {
     const res = {
       setHeader: (key: any, value: any) => {},
       getHeader: (value: any) => {},
+      set: (val1: any, val2: any) => {},
       status: (payload: number) => {
         expect(payload).toBe(400);
       },

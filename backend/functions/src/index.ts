@@ -7,59 +7,60 @@ import type {Kana} from './kanaModel';
 // The Firebase Admin SDK to access Firestore.
 import {db} from './config/firebase';
 
-const cors = require('cors')({origin: true});
-
 // POST request to add a valid kana to database
 exports.addKana = functions.https.onRequest(async (req: Request, res: Response) => {
-  cors(req, res, async () => {
-    try {
-      // Todo: Check request type
-      if (isValidQuery(req.query)) {
-        // Do Kana procesing
-        const kana: Kana = req.query as unknown as Kana;
-        const writeResult = await db.collection('kanas').add(kana);
-        res.status(400);
-        const id: unknown = writeResult.id;
-        res.json({result: `Kana with ID: ${id} added.`});
-      } else {
-        res.status(400);
-        res.json({
-          result: `Request invalid: kana not added`,
-        });
-      }
-    } catch (error: any) {
-      res.status(500);
-      res.json('Unable to add kana');
+  try {
+    res.set('Access-Control-Allow-Origin', '*');
+    // Todo: Check request type
+    if (isValidQuery(req.query)) {
+      // Do Kana procesing
+      const kana: Kana = req.query as unknown as Kana;
+      const writeResult = await db.collection('kanas').add(kana);
+      res.status(400);
+      const id: unknown = writeResult.id;
+      res.json({result: `Kana with ID: ${id} added.`});
+    } else {
+      res.status(400);
+      res.json({
+        result: 'Request invalid: kana not added',
+      });
     }
-  });
+  } catch (error: unknown) {
+    res.status(500);
+    res.json('Unable to add kana');
+  }
 });
 
 // GET request get all Kanas
 exports.getKanas = functions.https.onRequest(async (req: Request, res: Response) => {
-  cors(req, res, async () => {
-    try {
-      // Todo: Check request type
-      // Get database snapshot
-      const querySnapshot: FirebaseFirestore.QuerySnapshot = await db
-        .collection('kanas')
-        .get();
+  try {
+    res.set('Access-Control-Allow-Origin', '*');
+    // Todo: Check request type
+    // Get database snapshot
+    const querySnapshot: FirebaseFirestore.QuerySnapshot = await db
+      .collection('kanas')
+      .get();
 
-      const kanas: any[] = [];
+    const kanas: unknown[] = [];
 
-      querySnapshot.forEach((doc: QueryDocumentSnapshot) => {
-        // doc.data() is never undefined for query doc snapshots
-        kanas.push(doc.data());
-      });
+    querySnapshot.forEach((doc: QueryDocumentSnapshot) => {
+      // doc.data() is never undefined for query doc snapshots
+      kanas.push(doc.data());
+    });
 
-      res.status(400);
-      res.json({result: kanas});
-    } catch (error: any) {
-      res.status(500);
-      res.json('Unable to get kanas');
-    }
-  });
+    res.status(400);
+    res.json({result: kanas});
+  } catch (error: unknown) {
+    res.status(500);
+    res.json('Unable to get kanas');
+  }
 });
 
+/**
+ * Represents a book.
+ * @constructor
+ * @param {ParsedQs} query - The query
+ */
 function isValidQuery(query: ParsedQs): boolean {
   // Rejects non-truthy value in any parameter
   if (query && query.en && query.jp && query.category) {
