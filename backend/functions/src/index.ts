@@ -38,18 +38,19 @@ exports.getKanas = functions.https.onRequest(async (req: Request, res: Response)
   cors(req, res, async () => {
     try {
       // Get database snapshot
-      const querySnapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
-        await db.collection('kanas').get();
+      const querySnapshot: FirebaseFirestore.QuerySnapshot = await db
+        .collection('kanas')
+        .get();
 
       const kanas: any[] = [];
 
       querySnapshot.forEach((doc: QueryDocumentSnapshot) => {
         // doc.data() is never undefined for query doc snapshots
-        console.log(doc.id, ' => ', doc.data());
         kanas.push(doc.data());
       });
 
-      res.status(400).json({result: kanas});
+      res.status(400);
+      res.json({result: kanas});
     } catch (error: any) {
       res.status(500);
       res.json('Unable to get kanas');

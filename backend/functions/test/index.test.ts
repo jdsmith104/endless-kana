@@ -1,5 +1,12 @@
 import 'jest';
-import {expect, test, beforeAll, afterAll} from '@jest/globals';
+import {
+  describe,
+  expect,
+  test,
+  beforeAll,
+  afterAll,
+  beforeEach,
+} from '@jest/globals';
 
 const testConfig = require('firebase-functions-test')();
 
@@ -9,26 +16,19 @@ import type {SinonStub} from 'sinon';
 // Require firebase-admin so we can stub out some of its methods.
 import * as admin from 'firebase-admin';
 
-import type {Kana} from '../src/kanaModel';
+import {createDemoDocument, exampleDocument} from './mockFirestore';
+import type {MockFirestore} from './mockFirestore';
 
 let myFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
-type MockDB = {kanas: Array<Kana>};
-
 // Mock database
-const mockDB: MockDB = {
-  kanas: [
-    {en: 'ni', jp: 'に', category: 'hiragana'},
-    {en: 'nu', jp: 'ぬ', category: 'hiragana'},
-    {en: 'ne', jp: 'ね', category: 'hiragana'},
-    {en: 'na', jp: 'な', category: 'hiragana'},
-    {en: 'no', jp: 'の', category: 'hiragana'},
-    {en: 're', jp: 'れ', category: 'hiragana'},
-    {en: 'wa', jp: 'わ', category: 'hiragana'},
-    {en: 'wo', jp: 'を', category: 'hiragana'},
-    {en: 'me', jp: 'め', category: 'hiragana'},
-  ],
+const mockDB: MockFirestore = {
+  kanas: [],
 };
+
+beforeEach(() => {
+  mockDB.kanas = [];
+});
 
 beforeAll(() => {
   // Mock the initializeApp
@@ -47,10 +47,10 @@ beforeAll(() => {
                 return [];
               }
             },
-            add: (doc: any) => {
+            add: (kana: any) => {
               if (path == 'kanas') {
-                mockDB[path].push(doc);
-                return {id: mockDB[path].length};
+                mockDB['kanas'].push(createDemoDocument(kana));
+                return {id: mockDB['kanas'].length};
               } else {
                 return {id: 0};
               }
@@ -74,6 +74,10 @@ afterAll(() => {
 });
 
 describe('addKana', () => {
+  beforeAll(() => {
+    mockDB.kanas = exampleDocument;
+  });
+
   test('It returns an error message', () => {
     const req = {headers: {origin: true}, body: {}};
     const res = {
@@ -106,10 +110,50 @@ describe('addKana', () => {
       },
       json: (payload: any) => {
         // If this fails, the program exits instead of failing the test
-        expect(payload.result).toBe('Kana with ID: 10 added.');
+        expect(payload.result).toBe('Kana with ID: 1 added.');
       },
     };
 
     myFunctions.addKana(req as any, res as any);
   });
+
+  // Todo: Test what happens when an error is thrown in API
+});
+
+describe('getKanas', () => {
+  test('It returns empty', () => {
+    const req = {headers: {origin: true}, body: {}};
+    const res = {
+      setHeader: (key: any, value: any) => {},
+      getHeader: (value: any) => {},
+      status: (payload: number) => {
+        expect(payload).toBe(400);
+      },
+      json: (payload: any) => {
+        expect(payload.result.length).toBe(0);
+      },
+    };
+
+    myFunctions.getKanas(req as any, res as any);
+  });
+
+  test('It returns kanas', () => {
+    mockDB.kanas = exampleDocument;
+
+    const req = {headers: {origin: true}, body: {}};
+    const res = {
+      setHeader: (key: any, value: any) => {},
+      getHeader: (value: any) => {},
+      status: (payload: number) => {
+        expect(payload).toBe(400);
+      },
+      json: (payload: any) => {
+        expect(payload.result.length).toBe(9);
+      },
+    };
+
+    myFunctions.getKanas(req as any, res as any);
+  });
+
+  // Todo: Test what happens when an error is thrown in API
 });
