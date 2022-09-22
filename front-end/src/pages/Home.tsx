@@ -46,7 +46,6 @@ const Home = function Home() {
       }
     }
 
-    console.log('Refreshing...');
     getChoices().then((newChoices) => {
       setChoices(newChoices);
       setSolution(newChoices[0]);
