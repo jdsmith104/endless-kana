@@ -4,24 +4,23 @@ import { Kana } from '../pages/kanas.model';
 
 type AnswerContainerProps = {
   choices: Kana[];
-  solution: Kana;
-  answerClicked: { onClick(): void };
+  answerClicked: { onClick(kana: Kana): void };
 };
 
 function AnswerContainer(props: AnswerContainerProps) {
-  const { choices, solution, answerClicked } = props;
+  const { choices, answerClicked } = props;
   return (
     <div>
-      <h1>
-        Hello, {choices[0].en} {solution.en}
-      </h1>
-      <IonButton
-        onClick={() => {
-          answerClicked.onClick();
-        }}
-      >
-        Test
-      </IonButton>
+      {choices.map((item) => (
+        <IonButton
+          key={item.en}
+          onClick={() => {
+            answerClicked.onClick(item);
+          }}
+        >
+          {item.jp}
+        </IonButton>
+      ))}
     </div>
   );
 }

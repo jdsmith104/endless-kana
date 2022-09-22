@@ -5,11 +5,7 @@ type QuestionProps = { question: Kana };
 
 function Question(props: QuestionProps) {
   const { question } = props;
-  return (
-    <h1>
-      Hello, {question.en} {question.jp}
-    </h1>
-  );
+  return <h1>What is this Kana? {question.jp}</h1>;
 }
 
 export default Question;
