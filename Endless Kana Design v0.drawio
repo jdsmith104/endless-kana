@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2022-09-18T16:08:26.032Z" agent="5.0 (Windows)" etag="ywbyZKLXZbkfjubJ3Ncv" version="18.1.2" type="github" pages="6">
+<mxfile host="app.diagrams.net" modified="2022-09-22T08:21:08.850Z" agent="5.0 (Windows)" etag="MiMX0mN4wTfcezchucJp" version="20.3.2" type="github" pages="6">
   <diagram id="TTX6n0Y7mzK5cYTL0D-u" name="Architecture ">
-    <mxGraphModel dx="1331" dy="2177" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#F1FAEE" math="0" shadow="0">
+    <mxGraphModel dx="467" dy="751" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" background="#F1FAEE" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" style="locked=1;" parent="0" />
@@ -62,7 +62,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="SdoqpPBz9pxieYwzktyn" name="Database">
-    <mxGraphModel dx="466" dy="762" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="467" dy="751" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -130,7 +130,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="BlyysfrQwkLH1c9cHI49" name="UI Component Tree">
-    <mxGraphModel dx="1550" dy="824" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+    <mxGraphModel dx="467" dy="751" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -156,7 +156,7 @@
         <mxCell id="c-xAIKvrE92fFmrSfA3p-4" value="Component: AnswerContainer&lt;br&gt;State: numTries" style="rounded=0;whiteSpace=wrap;html=1;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="110" y="400" width="320" height="100" as="geometry" />
         </mxCell>
-        <mxCell id="WK-R6pOWSD38eVhN0J8N-3" value="Shared state: solution,&lt;br&gt;choices,&lt;br&gt;answerCicked() " style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
+        <mxCell id="WK-R6pOWSD38eVhN0J8N-3" value="Shared state: &lt;br&gt;choices,&lt;br&gt;answerCicked() " style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="130" y="200" width="140" height="100" as="geometry" />
         </mxCell>
         <mxCell id="clV1b__mPQM5WBCDOuy7-1" value="1" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
