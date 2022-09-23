@@ -1,11 +1,11 @@
-import { IonContent, IonPage } from '@ionic/react';
+import { IonButton, IonContent, IonPage } from '@ionic/react';
 import './Home.css';
 import React, { useEffect, useState } from 'react';
-import getKanas from './kanas.controller';
 import { Kana } from './kanas.model';
 import Question from '../components/Question';
 import AnswerContainer from '../components/AnswerContainer';
 import Notification from '../components/Notification';
+import useStorage from '../hooks/useStorage';
 
 const NOTIFICATIONS = {
   'New question': 'Try this new question',
@@ -13,12 +13,13 @@ const NOTIFICATIONS = {
 };
 
 const Home = function Home() {
+  const { kanas } = useStorage();
+
   const [solution, setSolution] = useState<Kana | undefined>(undefined);
   const [choices, setChoices] = useState<Array<any>>([]);
   const [notification, setNotification] = useState('');
 
   async function start() {
-    const kanas = await getKanas();
     if (kanas) {
       setSolution(kanas[0]);
       setChoices(kanas.slice(0, 4));
@@ -26,10 +27,9 @@ const Home = function Home() {
     }
   }
 
-  function refreshQuestionAndAnswers() {
+  async function refreshQuestionAndAnswers() {
     async function getChoices(numChoices: number = 4): Promise<Kana[]> {
       try {
-        const kanas = await getKanas();
         const initialIndex = Math.floor(Math.random() * kanas.length);
         const nextChoices: Kana[] = [];
         let offset = initialIndex;
@@ -46,16 +46,22 @@ const Home = function Home() {
       }
     }
 
-    getChoices().then((newChoices) => {
-      setChoices(newChoices);
-      setSolution(newChoices[0]);
-      setNotification(NOTIFICATIONS['New question']);
-    });
+    const nextChoices: Kana[] = await getChoices();
+    setChoices(nextChoices);
+    setSolution(nextChoices[0]);
+    setNotification(NOTIFICATIONS['New question']);
   }
 
   useEffect(() => {
     start();
   }, []);
+
+  // React hook for checking when kanas (mirror of db) has been updated
+  useEffect(() => {
+    console.log('State Kanas has been updated', kanas);
+    refreshQuestionAndAnswers();
+  }, [kanas]);
+
   let content;
 
   if (solution) {
@@ -84,6 +90,13 @@ const Home = function Home() {
     content = (
       <IonContent fullscreen>
         <p>Hello World!</p>
+        <IonButton
+          onClick={() => {
+            refreshQuestionAndAnswers();
+          }}
+        >
+          Try
+        </IonButton>
       </IonContent>
     );
   }
