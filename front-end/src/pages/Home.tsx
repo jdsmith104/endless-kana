@@ -6,11 +6,14 @@ import Question from '../components/Question';
 import AnswerContainer from '../components/AnswerContainer';
 import Notification from '../components/Notification';
 import useStorage from '../hooks/useStorage';
+import { getRandomNumber } from '../common/shuffle';
 
 const NOTIFICATIONS = {
   'New question': 'Try this new question',
   Retry: 'Wrong! Try something else ;)',
 };
+
+const CHOICES_COUNT = 4;
 
 const Home = function Home() {
   const { kanas } = useStorage();
@@ -21,16 +24,17 @@ const Home = function Home() {
 
   async function start() {
     if (kanas) {
-      setSolution(kanas[0]);
-      setChoices(kanas.slice(0, 4));
-      setNotification('Pick an answer');
+      const answerIndex: number = getRandomNumber(CHOICES_COUNT);
+      setSolution(kanas[answerIndex]);
+      setChoices(kanas.slice(0, CHOICES_COUNT));
+      setNotification(NOTIFICATIONS['New question']);
     }
   }
 
   async function refreshQuestionAndAnswers() {
     async function getChoices(numChoices: number = 4): Promise<Kana[]> {
       try {
-        const initialIndex = Math.floor(Math.random() * kanas.length);
+        const initialIndex = getRandomNumber(kanas.length);
         const nextChoices: Kana[] = [];
         let offset = initialIndex;
         while (nextChoices.length < numChoices) {
@@ -46,9 +50,9 @@ const Home = function Home() {
       }
     }
 
-    const nextChoices: Kana[] = await getChoices();
+    const nextChoices: Kana[] = await getChoices(CHOICES_COUNT);
     setChoices(nextChoices);
-    setSolution(nextChoices[0]);
+    setSolution(nextChoices[getRandomNumber(CHOICES_COUNT)]);
     setNotification(NOTIFICATIONS['New question']);
   }
 

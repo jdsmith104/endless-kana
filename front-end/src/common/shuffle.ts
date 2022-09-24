@@ -19,3 +19,7 @@ export default function fisherYates<T>(arr: T[]): T[] {
 
   return arrCopy;
 }
+
+export function getRandomNumber(max: number): number {
+  return Math.floor(Math.random() * max);
+}
