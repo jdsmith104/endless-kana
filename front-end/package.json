@@ -1,5 +1,5 @@
 {
-  "name": "demoApp",
+  "name": "endless-kana",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -84,5 +84,5 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "prettier": "^2.7.1"
   },
-  "description": "A demoApp"
+  "description": "A JP learning app"
 }
