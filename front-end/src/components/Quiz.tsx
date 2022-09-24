@@ -4,7 +4,7 @@ import { getRandomNumber } from '../common/shuffle';
 import Question from './Question';
 import AnswerContainer from './AnswerContainer';
 import Notification from './Notification';
-import getChoicesFromKana from './Quiz.controller';
+import useQuizStats, { getChoicesFromKana } from './Quiz.controller';
 
 type QuizProps = { kanas: Kana[] };
 
@@ -17,6 +17,7 @@ const NOTIFICATIONS = {
 
 function Quiz(props: QuizProps) {
   const { kanas } = props;
+  const { answerCorrect, answerNotCorrect } = useQuizStats();
 
   const [solution, setSolution] = useState<Kana>(emptyKana);
   const [choices, setChoices] = useState<Array<any>>([]);
@@ -45,13 +46,13 @@ function Quiz(props: QuizProps) {
       <AnswerContainer
         choices={choices}
         answerClicked={{
-          onClick(answerSelected: Kana): void {
-            if (answerSelected === solution) {
-              console.log('Solution found');
+          onClick(selected: Kana): void {
+            if (selected === solution) {
               refreshQuestionAndAnswers();
+              answerCorrect(selected);
             } else {
-              console.log('Solution not found');
               setNotification(NOTIFICATIONS.Retry);
+              answerNotCorrect();
             }
           },
         }}

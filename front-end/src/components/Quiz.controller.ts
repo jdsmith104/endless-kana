@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { Kana } from '../common/kanas.model';
 import { getRandomNumber } from '../common/shuffle';
 
-export default async function getChoicesFromKana(
+async function getChoicesFromKana(
   kanas: Kana[],
   numChoices: number = 4,
 ): Promise<Kana[]> {
@@ -29,3 +30,24 @@ export default async function getChoicesFromKana(
     return [];
   }
 }
+
+function useQuizStats() {
+  const [numTries, setNumTries] = useState(0);
+
+  function answerNotCorrect() {
+    setNumTries(numTries + 1);
+  }
+
+  function answerCorrect(kana: Kana) {
+    console.log(`Correctly guessed ${kana} in ${numTries} trie(0)`);
+    setNumTries(0);
+  }
+
+  return {
+    answerCorrect,
+    answerNotCorrect,
+  };
+}
+
+export default useQuizStats;
+export { getChoicesFromKana };
