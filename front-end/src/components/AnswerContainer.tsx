@@ -1,6 +1,6 @@
 import { IonButton } from '@ionic/react';
 import React from 'react';
-import { Kana } from '../pages/kanas.model';
+import { Kana } from '../common/kanas.model';
 
 type AnswerContainerProps = {
   choices: Kana[];

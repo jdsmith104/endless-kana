@@ -1,7 +1,7 @@
 import { IonButton, IonContent, IonPage } from '@ionic/react';
 import './Home.css';
 import React, { useEffect, useState } from 'react';
-import { Kana } from './kanas.model';
+import { Kana } from '../common/kanas.model';
 import Question from '../components/Question';
 import AnswerContainer from '../components/AnswerContainer';
 import Notification from '../components/Notification';

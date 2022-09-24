@@ -1,7 +1,7 @@
 import { Storage } from '@ionic/storage';
 import { useEffect, useState } from 'react';
-import getKanas from '../pages/kanas.controller';
-import { Kana } from '../pages/kanas.model';
+import getKanas from '../common/kanas.controller';
+import { Kana } from '../common/kanas.model';
 
 const KANAS_KEY = 'kanas';
 

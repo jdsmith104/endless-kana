@@ -1,5 +1,5 @@
 import React from 'react';
-import { Kana } from '../pages/kanas.model';
+import { Kana } from '../common/kanas.model';
 
 type QuestionProps = { question: Kana };
 
