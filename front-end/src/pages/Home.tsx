@@ -22,28 +22,27 @@ const Home = function Home() {
   const [choices, setChoices] = useState<Array<any>>([]);
   const [notification, setNotification] = useState('');
 
-  async function start() {
-    if (kanas) {
-      const answerIndex: number = getRandomNumber(CHOICES_COUNT);
-      setSolution(kanas[answerIndex]);
-      setChoices(kanas.slice(0, CHOICES_COUNT));
-      setNotification(NOTIFICATIONS['New question']);
-    }
-  }
-
   async function refreshQuestionAndAnswers() {
     async function getChoices(numChoices: number = 4): Promise<Kana[]> {
       try {
-        const initialIndex = getRandomNumber(kanas.length);
-        const nextChoices: Kana[] = [];
-        let offset = initialIndex;
-        while (nextChoices.length < numChoices) {
-          if (offset >= kanas.length) {
-            offset = 0;
-          }
-          nextChoices.push(kanas[offset]);
-          offset += 1;
+        if (kanas.length < 1) {
+          throw new Error('No kana information');
+        } else if (numChoices > kanas.length) {
+          throw new Error('Cannot select more kana choices than available in kanas');
         }
+
+        const nextChoices: Kana[] = [];
+
+        const randomIndeces: Set<number> = new Set<number>();
+        while (randomIndeces.size < numChoices) {
+          const index = getRandomNumber(kanas.length);
+          randomIndeces.add(index);
+        }
+
+        randomIndeces.forEach((index) => {
+          nextChoices.push(kanas[index]);
+        });
+
         return nextChoices;
       } catch (error) {
         return [];
@@ -56,14 +55,15 @@ const Home = function Home() {
     setNotification(NOTIFICATIONS['New question']);
   }
 
-  useEffect(() => {
-    start();
-  }, []);
+  // Constructor
+  useEffect(() => {}, []);
 
   // React hook for checking when kanas (mirror of db) has been updated
   useEffect(() => {
-    console.log('State Kanas has been updated', kanas);
-    refreshQuestionAndAnswers();
+    // Only refresh q&a when kanas available
+    if (kanas.length > 0) {
+      refreshQuestionAndAnswers();
+    }
   }, [kanas]);
 
   let content;
