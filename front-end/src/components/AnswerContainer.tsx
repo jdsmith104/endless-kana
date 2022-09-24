@@ -4,11 +4,12 @@ import { Kana } from '../common/kanas.model';
 
 type AnswerContainerProps = {
   choices: Kana[];
+  mode: string;
   answerClicked: { onClick(kana: Kana): void };
 };
 
 function AnswerContainer(props: AnswerContainerProps) {
-  const { choices, answerClicked } = props;
+  const { choices, mode, answerClicked } = props;
   return (
     <div>
       {choices.map((item) => (
@@ -18,7 +19,8 @@ function AnswerContainer(props: AnswerContainerProps) {
             answerClicked.onClick(item);
           }}
         >
-          {item.jp}
+          {mode === 'en' && item.en}
+          {mode !== 'en' && item.jp}
         </IonButton>
       ))}
     </div>

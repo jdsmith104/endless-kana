@@ -40,11 +40,12 @@ function Quiz(props: QuizProps) {
 
   return (
     <div>
-      <Question question={solution} />
+      <Question question={solution} mode="jp" />
       <Notification notification={notification} />
 
       <AnswerContainer
         choices={choices}
+        mode="en"
         answerClicked={{
           onClick(selected: Kana): void {
             if (selected === solution) {
