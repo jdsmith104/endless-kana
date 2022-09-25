@@ -47,7 +47,9 @@
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
     "eject": "react-scripts eject",
     "lint": "eslint .",
-    "tidy": "prettier --write ."
+    "tidy": "prettier --write .",
+    "deploy-test": "yarn build && mv build fb_public && firebase hosting:channel:deploy testing --expires 1h",
+    "clone-test":"firebase hosting:clone endless-kana:testing endless-kana:live"
   },
   "eslintConfig": {
     "extends": [
