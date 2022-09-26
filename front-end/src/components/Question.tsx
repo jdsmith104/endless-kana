@@ -1,5 +1,6 @@
 import React from 'react';
 import { Kana } from '../common/kanas.model';
+import './Question.css';
 
 type QuestionProps = { question: Kana; mode: string };
 
@@ -11,7 +12,11 @@ function Question(props: QuestionProps) {
   } else {
     displayQuestion = question.jp;
   }
-  return <h1>What is this Kana? {displayQuestion}</h1>;
+  return (
+    <div className="tile">
+      <h1>{displayQuestion}</h1>
+    </div>
+  );
 }
 
 export default Question;

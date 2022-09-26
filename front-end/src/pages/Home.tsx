@@ -19,7 +19,9 @@ const Home = function Home() {
 
   return (
     <IonPage>
-      <IonContent fullscreen>{pageContent}</IonContent>
+      <IonContent fullscreen>
+        <div id="page">{pageContent}</div>
+      </IonContent>
     </IonPage>
   );
 };

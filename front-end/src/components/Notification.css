@@ -1,0 +1,8 @@
+.notification-container {
+  justify-content: center;
+  display: flex;
+}
+
+.notification-container p {
+  font-size: 20px;
+}

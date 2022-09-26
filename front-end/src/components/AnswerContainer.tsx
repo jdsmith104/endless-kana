@@ -1,6 +1,7 @@
 import { IonButton } from '@ionic/react';
 import React from 'react';
 import { Kana } from '../common/kanas.model';
+import './AnswerContainer.css';
 
 type AnswerContainerProps = {
   choices: Kana[];
@@ -11,7 +12,7 @@ type AnswerContainerProps = {
 function AnswerContainer(props: AnswerContainerProps) {
   const { choices, mode, answerClicked } = props;
   return (
-    <div>
+    <div className="container">
       {choices.map((item) => (
         <IonButton
           key={item.en}
