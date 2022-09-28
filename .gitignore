@@ -104,3 +104,4 @@ dist
 .tern-port
 backend/key/
 front-end/fb_public/
+front-end/.firebase/

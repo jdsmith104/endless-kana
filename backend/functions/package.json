@@ -10,13 +10,14 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "tidy": "prettier --write src",
-    "test": "jest --watchAll"
+    "test": "yarn build && jest --watchAll"
   },
   "engines": {
     "node": "16"
   },
   "main": "lib/index.js",
   "dependencies": {
+    "@firebase/firestore": "^3.5.0",
     "@types/cors": "^2.8.12",
     "cors": "^2.8.5",
     "firebase-admin": "^10.0.2",

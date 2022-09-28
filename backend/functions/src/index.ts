@@ -7,8 +7,11 @@ import type {Kana} from './kanaModel';
 // The Firebase Admin SDK to access Firestore.
 import {db} from './config/firebase';
 
-const SUCCESS_STATUS = 200;
-const FAIL_STATUS = 500;
+enum HTPPResponseStatus {
+  OK = 200,
+  CREATED = 201,
+  FAILED = 500,
+}
 
 // POST request to add a valid kana to database
 exports.addKana = functions.https.onRequest(async (req: Request, res: Response) => {
@@ -18,18 +21,26 @@ exports.addKana = functions.https.onRequest(async (req: Request, res: Response) 
     if (isValidQuery(req.query)) {
       // Do Kana procesing
       const kana: Kana = req.query as unknown as Kana;
-      const writeResult = await db.collection('kanas').add(kana);
-      res.status(SUCCESS_STATUS);
-      const id: unknown = writeResult.id;
-      res.json({result: `Kana with ID: ${id} added.`});
+      const kanaInCollection: boolean = await isKanaInCollection(kana);
+      if (!kanaInCollection) {
+        const writeResult = await db.collection('kanas').add(kana);
+        res.status(HTPPResponseStatus.CREATED);
+        const id: unknown = writeResult.id;
+        res.json({result: `Kana with ID: ${id} added.`});
+      } else {
+        res.status(HTPPResponseStatus.OK);
+        res.json({
+          result: 'Kana already exists: kana not added',
+        });
+      }
     } else {
-      res.status(SUCCESS_STATUS);
+      res.status(HTPPResponseStatus.OK);
       res.json({
         result: 'Request invalid: kana not added',
       });
     }
   } catch (error: unknown) {
-    res.status(FAIL_STATUS);
+    res.status(HTPPResponseStatus.FAILED);
     res.json('Unable to add kana');
   }
 });
@@ -51,10 +62,10 @@ exports.getKanas = functions.https.onRequest(async (req: Request, res: Response)
       kanas.push(doc.data());
     });
 
-    res.status(SUCCESS_STATUS);
+    res.status(HTPPResponseStatus.OK);
     res.json({result: kanas});
   } catch (error: unknown) {
-    res.status(FAIL_STATUS);
+    res.status(HTPPResponseStatus.FAILED);
     res.json('Unable to get kanas');
   }
 });
@@ -70,4 +81,37 @@ function isValidQuery(query: ParsedQs): boolean {
     return true;
   }
   return false;
+}
+
+/**
+ * Check if kana already exists in database
+ * @param {Kana} kana the input kana to check for existence
+ * @return {boolean} true if kana is not already in database, false otherwise
+ */
+async function isKanaInCollection(kana: Kana): Promise<boolean> {
+  try {
+    const collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> =
+      await db.collection('kanas');
+
+    const filteredQuery1: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
+      await collection.where('jp', '==', kana.jp);
+
+    const filteredQuery2 = await filteredQuery1.where(
+      'category',
+      '==',
+      kana.category,
+    );
+
+    const q: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
+      await filteredQuery2.get();
+
+    const isKanaFound: boolean = q.size > 0;
+
+    return isKanaFound;
+
+    console.log(q);
+  } catch (error) {
+    console.error(error);
+    return true;
+  }
 }
