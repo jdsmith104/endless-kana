@@ -10,7 +10,7 @@
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
     "tidy": "prettier --write src",
-    "test": "yarn build && jest --watchAll"
+    "test": "yarn build && jest --verbose"
   },
   "engines": {
     "node": "16"

@@ -16,7 +16,7 @@ import type {SinonStub} from 'sinon';
 // Require firebase-admin so we can stub out some of its methods.
 import * as admin from 'firebase-admin';
 
-import {Collection, exampleDocument, FirestoreArray} from './mockFirestore';
+import {Collection, emptyFirestore, exampleDocument, FirestoreArray} from './mockFirestore';
 import type {MockFirestore} from './mockFirestore';
 
 let myFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
@@ -102,6 +102,9 @@ describe('addKana', () => {
         actualResult = payload.result
       },
     };
+
+    collection.add_where_result(emptyFirestore)
+    collection.add_where_result(emptyFirestore)
     
     expectedStatus = 200;
     expectedResult = 'Request invalid: kana not added'
@@ -135,6 +138,9 @@ describe('addKana', () => {
     expectedStatus = 201;
     expectedResult = 'Kana with ID: 1 added.';
 
+    collection.add_where_result(emptyFirestore)
+    collection.add_where_result(emptyFirestore)
+
     await myFunctions.addKana(req as any, res as any);
     expect(actualResult).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
@@ -146,9 +152,6 @@ describe('addKana', () => {
       headers: {origin: true},
       query: {en: 'ni', jp: 'に', category: 'hiragana'},
     };
-
-    expectedStatus = 200;
-    expectedResult = 'Kana already exists: 0'
 
     const res = {
       // Required for cors
@@ -165,6 +168,12 @@ describe('addKana', () => {
         actualResult = payload.result
       },
     };
+
+    expectedStatus = 200;
+    expectedResult = 'Kana already exists: kana not added'
+
+    collection.add_where_result(exampleDocument)
+    collection.add_where_result(exampleDocument)
 
     await myFunctions.addKana(req as any, res as any);
     expect(actualResult).toBe(expectedResult);

@@ -1,32 +1,44 @@
 import type {Kana} from '../src/kanaModel';
 
-type DemoDocuments = {id: string; data(): Kana};
+class DemoDocument 
+{
+  id: string; 
+  kana: Kana;
 
-class FirestoreArray<T=DemoDocuments> extends Array<T> { 
+  data(): Kana{
+    return this.kana
+  } 
+  get(prop: string): string{
+    const key = prop as keyof typeof this.kana
+    return this.kana[key]
+  }
+
+  constructor(id:string, kana:Kana){
+    this.id = id
+    this.kana = kana
+  }
+};
+
+class FirestoreArray<T=DemoDocument> extends Array<T> {
+  public size: number = 0;
+
   constructor(items: T[]) {
     super();
     this.push(...items);
+    this.size = items.length;
   }
-
-  size = (): number => {
-    return this.length;
-  }
-
-
+  updateSize() {
+    this.size = this.length
+  } 
 }
 
-type MockFirestore = {kanas: FirestoreArray<DemoDocuments>};
+type MockFirestore = {kanas: FirestoreArray<DemoDocument>};
 
-function createDemoDocument(kana: Kana): DemoDocuments {
-  return {
-    id: '',
-    data: (): Kana => {
-      return kana;
-    },
-  };
+function createDemoDocument(kana: Kana): DemoDocument {
+  return new DemoDocument('', kana)
 }
 
-const exampleDocument: FirestoreArray<DemoDocuments> = new FirestoreArray<DemoDocuments>([
+const exampleDocument: FirestoreArray<DemoDocument> = new FirestoreArray<DemoDocument>([
   createDemoDocument({en: 'ni', jp: 'に', category: 'hiragana'}),
   createDemoDocument({en: 'nu', jp: 'ぬ', category: 'hiragana'}),
   createDemoDocument({en: 'ne', jp: 'ね', category: 'hiragana'}),
@@ -39,17 +51,23 @@ const exampleDocument: FirestoreArray<DemoDocuments> = new FirestoreArray<DemoDo
 ]);
 
 
+const emptyFirestore: FirestoreArray = new FirestoreArray([])
+
+
 class Collection {
   path: string;
   db: MockFirestore;
+  where_result_queue: Array<MockFirestore>;
 
   constructor(path: string, db: MockFirestore){
     this.path = path
     this.db = db
+    this.where_result_queue = []
   }
 
   get(): Array<any> {
     if (this.path == 'kanas') {
+      this.db.kanas.updateSize();
       return this.db[this.path];
     } else {
       return [];
@@ -61,31 +79,36 @@ class Collection {
       this.db['kanas'].push(createDemoDocument(kana));
       return {id: this.db['kanas'].length};
     } else {
-      return {id: 0};
+      throw new Error("Selected path not valid");
+      
     }
+  }
+
+  // add_where_result(kanas: Kana[]){
+  //   const mockFirestore: FirestoreArray<DemoDocument> = new FirestoreArray<DemoDocument>(kanas.map(kana=> createDemoDocument(kana)))
+  //   this.where_result_queue.push(new Collection(this.path, {kanas: mockFirestore}))
+  // }
+
+  add_where_result(kanas: FirestoreArray){
+    this.where_result_queue.push({kanas: kanas});
   }
 
   where(attr: string, operator: string, target: any): Collection {
+    // Get item at front of queue
+    this.where_result_queue.reverse()
+    const ret = this.where_result_queue.pop()
+    //ERROR HERE RETURN DOESNT CONTAIN QUEUE
+    this.where_result_queue.reverse()
+    if (ret) {
+      this.db = ret;
+      return this;
+    } else {
+      throw new Error("where result not queued");
       
-    
-    const newDb: MockFirestore = this.db
-    if (newDb.kanas.length > 0) {
-    switch (operator) {
-      case "==":{
-        const a = newDb.kanas[0].data()
-      const key = attr as keyof typeof newDb.kanas[0];
-      newDb.kanas.filter((val)=>{
-        val.data()[key] == target})
-      return new Collection(this.path, newDb);}
-      default:
-        throw new Error("Operator not implemented");
-        break;
     }
-  } else {
-    return new Collection(this.path, newDb);
   }
 
-}}
+}
 
-export type {DemoDocuments as DemoDocument, MockFirestore};
-export {exampleDocument, createDemoDocument, Collection, FirestoreArray};
+export type {DemoDocument, MockFirestore};
+export {exampleDocument, createDemoDocument, Collection, FirestoreArray, emptyFirestore};

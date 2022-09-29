@@ -105,7 +105,9 @@ async function isKanaInCollection(kana: Kana): Promise<boolean> {
     const q: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
       await filteredQuery2.get();
 
-    const isKanaFound: boolean = q.size > 0;
+    const size = q.size;
+
+    const isKanaFound: boolean = size > 0;
 
     return isKanaFound;
 
