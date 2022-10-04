@@ -2,6 +2,7 @@ import requests
 
 from enum import IntEnum
 
+# The order of these arrays is signficant
 
 hiraganaArray = [
     'あ', 'い', 'う', 'え', 'お',
@@ -20,6 +21,26 @@ hiraganaArray = [
     'だ', 'ぢ', 'づ', 'で', 'ど',
     'ば', 'び', 'ぶ', 'べ', 'ぼ',
     'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ',
+]
+
+katakanaArray = [
+    'ア', 'イ', 'ウ', 'エ', 'オ',
+    'カ', 'キ', 'ク', 'ケ', 'コ',
+    'サ', 'シ', 'ス', 'セ', 'ソ',
+    'タ', 'チ', 'ツ', 'テ', 'ト',
+    'ナ', 'ニ', 'ヌ', 'ネ', 'ノ',
+    'ハ', 'ヒ', 'フ', 'ヘ', 'ホ',
+    'マ', 'ミ', 'ム', 'メ', 'モ',
+    'ヤ',      'ユ',      'ヨ',
+    'ラ', 'リ', 'ル', 'レ', 'ロ',
+    'ワ', 'ヰ',      'ヱ', 'ヲ',
+                        'ン',
+    'ガ', 'ギ', 'グ', 'ゲ', 'ゴ',
+    'ザ', 'ジ', 'ズ', 'ゼ', 'ゾ',
+    'ダ', 'ヂ', 'ヅ', 'デ', 'ド',
+    'バ', 'ビ', 'ブ', 'ベ', 'ボ',
+    'パ', 'ピ', 'プ', 'ペ', 'ポ',
+
 ]
 
 romanjiArray = [
@@ -48,7 +69,7 @@ class ScriptMode(IntEnum):
     PROD = 1
 
 
-def makePostRequest(url: str, jp: str, en: str, category: str):
+def send_to_db(url: str, jp: str, en: str, category: str):
     query: str = f'?en={en}&jp={jp}&category={category}'
     try:
         # Format to make the post request
@@ -64,31 +85,33 @@ def makePostRequest(url: str, jp: str, en: str, category: str):
         print(e)
 
 
-def addKanaToTest(url: str):
+def send_kana_to_url(url: str):
     postUrl = url + '/addKana'
 
-    for jp, en in zip(hiraganaArray, romanjiArray):
-        makePostRequest(postUrl, jp, en, "hiragana")
+    for hiragana, katakana, en in zip(hiraganaArray, katakanaArray, romanjiArray):
+        send_to_db(postUrl, hiragana, en, "hiragana")
+        send_to_db(postUrl, katakana, en, "katakana")
 
 
-def run(mode: ScriptMode):
-    url = ''
-
+def run(mode: ScriptMode) -> None:
     if mode == ScriptMode.PROD:
         print('Running in production')
         url = 'https://us-central1-endless-kana.cloudfunctions.net'
-    if mode == ScriptMode.TEST:
+    elif mode == ScriptMode.TEST:
         print('Running in test')
         url = 'http://localhost:5001/endless-kana/us-central1'
     else:
         raise Exception("ScriptMode not handled")
 
-    addKanaToTest(url)
+    send_kana_to_url(url)
 
 
 if __name__ == '__main__':
     try:
-        run(ScriptMode.TEST)
+        print("Starting script")
+        # Set mode to set which url requests are made to
+        mode = ScriptMode.PROD
+        run(mode)
         print("Script running complete")
     except Exception as e:
         print(e)
