@@ -24,7 +24,7 @@ class FirestoreArray<T = DemoDocument> extends Array<T> {
   constructor(items: T[]) {
     super();
     this.push(...items);
-    this.size = items.length;
+    this.updateSize()
   }
   //
   updateSize() {
@@ -34,9 +34,6 @@ class FirestoreArray<T = DemoDocument> extends Array<T> {
 
 const kanaCollectionName: string = 'kanasv2'
 
-// type Mockfirestore = {'kanasv2: FirestoreArray<DemoDocument>}
-// Dynamic assignment of collection path
-
 class MockFirestore {
   documentsMap: Map<string, FirestoreArray<DemoDocument>>;
   // Initialise collection to empty
@@ -44,6 +41,7 @@ class MockFirestore {
     this.documentsMap = new Map();
     // If provided set an initial db
     if (collectionName && documents) {
+      documents.updateSize()
       this.set(collectionName, documents)
     }
   }
@@ -54,6 +52,7 @@ class MockFirestore {
    * @param documents the documents to be set in the collection
    */
   set(collectionName: string, documents: FirestoreArray<DemoDocument>): void{
+    documents.updateSize()
     this.documentsMap.set(collectionName, documents)
   }
 
@@ -76,7 +75,9 @@ class MockFirestore {
     if (collection) {
       collection.push(document)
     } else {
-      this.set(collectionName, new FirestoreArray([document]))
+      const documents: FirestoreArray = new FirestoreArray([document])
+      documents.updateSize()
+      this.set(collectionName, documents)
     }
   }
 
@@ -124,8 +125,6 @@ class Collection {
   get(): Array<any> {
     if (this.path == kanaCollectionName) {
       const firestoreArray = this.db.get(kanaCollectionName);
-      // Todo: Remove this line
-      firestoreArray.updateSize();
       return firestoreArray;
     } else {
       return [];
