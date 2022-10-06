@@ -32,12 +32,22 @@ let collection: Collection = new Collection(kanaCollectionName, mockDB);
 let actualStatus: number = NaN;
 let actualJSON: any;
 
+
+const req = {
+  headers: {origin: true},
+  query: {},
+  body: {}
+};
+
+
 beforeEach(() => {
   mockDB.reset(kanaCollectionName);
   collection = new Collection(kanaCollectionName, mockDB);
 
-  actualStatus = NaN;
-  actualJSON = '';
+  // Reset request
+  req.body = {};
+  req.headers = {origin: true};
+  req.query = {};
 });
 
 beforeAll(() => {
@@ -90,13 +100,14 @@ const res = {
   },
 };
 
+
+
 describe('addKana', () => {
   beforeEach(() => {
     mockDB.set(kanaCollectionName, exampleDocument);
   });
 
   test('It returns an error message', async () => {
-    const req = {headers: {origin: true}, body: {}};
 
     collection.add_where_result(emptyFirestore);
     collection.add_where_result(emptyFirestore);
@@ -111,10 +122,7 @@ describe('addKana', () => {
   });
 
   test('It returns a success message', async () => {
-    const req = {
-      headers: {origin: true},
-      query: {en: 'hi', jp: 'ひ', category: 'hiragana'},
-    };
+    req.query = {en: 'hi', jp: 'ひ', category: 'hiragana' };
 
     const expectedStatus = 201;
     const expectedResult = 'Kana with ID: 1 added.';
@@ -128,10 +136,7 @@ describe('addKana', () => {
   });
 
   test('It does not add duplicate kana', async () => {
-    const req = {
-      headers: {origin: true},
-      query: {en: 'ni', jp: 'に', category: 'hiragana'},
-    };
+    req.query = {en: 'ni', jp: 'に', category: 'hiragana'};
 
     const expectedStatus = 200;
     const expectedResult = 'Kana already exists: kana not added';
@@ -154,8 +159,6 @@ describe('getKanas', () => {
     // Reset DB
     mockDB.reset(kanaCollectionName);
 
-    const req = {headers: {origin: true}, body: {}};
-
     const expectedStatus = 200;
     const expectedLength = 0;
 
@@ -167,8 +170,6 @@ describe('getKanas', () => {
   test('It returns kanas', async () => {
     // Set mockDB to default type
     mockDB.set(kanaCollectionName, exampleDocument);
-
-    const req = {headers: {origin: true}, body: {}};
 
     const expectedStatus = 200;
     const expectedLength = exampleDocument.length;
