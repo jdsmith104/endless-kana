@@ -6,12 +6,7 @@ import type {Kana} from './kanaModel';
 
 // The Firebase Admin SDK to access Firestore.
 import {db} from './config/firebase';
-
-enum HTPPResponseStatus {
-  OK = 200,
-  CREATED = 201,
-  FAILED = 500,
-}
+import HTPPResponseStatus from './httpResponseStatus';
 
 const kanaCollectionName = 'kanasv2';
 
