@@ -19,13 +19,13 @@ import {
   emptyFirestore,
   exampleDocument,
   kanaCollectionName,
-  MockFirestore
+  MockFirestore,
 } from './mockFirestore';
 
 let myFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
 // Mock firestore stub
-const mockDB: MockFirestore = new MockFirestore()
+const mockDB: MockFirestore = new MockFirestore();
 
 let collection: Collection = new Collection(kanaCollectionName, mockDB);
 
@@ -33,7 +33,7 @@ let actualStatus: number = NaN;
 let actualJSON: any;
 
 beforeEach(() => {
-  mockDB.reset(kanaCollectionName)
+  mockDB.reset(kanaCollectionName);
   collection = new Collection(kanaCollectionName, mockDB);
 
   actualStatus = NaN;
@@ -74,7 +74,6 @@ afterAll(() => {
   firestoreStub.restore();
 });
 
-
 const res = {
   // Required for cors
   setHeader: (key: any, value: any) => {},
@@ -106,11 +105,10 @@ describe('addKana', () => {
     const expectedResult = 'Request invalid: kana not added';
 
     await myFunctions.addKana(req as any, res as any);
+
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualJSON["result"]).toBe(expectedResult);
+    expect(actualJSON['result']).toBe(expectedResult);
   });
-
-
 
   test('It returns a success message', async () => {
     const req = {
@@ -125,10 +123,9 @@ describe('addKana', () => {
     collection.add_where_result(emptyFirestore);
 
     await myFunctions.addKana(req as any, res as any);
-    expect(actualJSON["result"]).toBe(expectedResult);
+    expect(actualJSON['result']).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
   });
-
 
   test('It does not add duplicate kana', async () => {
     const req = {
@@ -145,7 +142,7 @@ describe('addKana', () => {
 
     await myFunctions.addKana(req as any, res as any);
 
-    expect(actualJSON["result"]).toBe(expectedResult);
+    expect(actualJSON['result']).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
   });
 
@@ -155,7 +152,7 @@ describe('addKana', () => {
 describe('getKanas', () => {
   test('It returns empty', async () => {
     // Reset DB
-    mockDB.reset(kanaCollectionName)
+    mockDB.reset(kanaCollectionName);
 
     const req = {headers: {origin: true}, body: {}};
 
@@ -174,7 +171,7 @@ describe('getKanas', () => {
     const req = {headers: {origin: true}, body: {}};
 
     const expectedStatus = 200;
-    const expectedLength = exampleDocument.length
+    const expectedLength = exampleDocument.length;
 
     await myFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);

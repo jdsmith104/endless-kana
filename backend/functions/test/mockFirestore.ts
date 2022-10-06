@@ -24,7 +24,7 @@ class FirestoreArray<T = DemoDocument> extends Array<T> {
   constructor(items: T[]) {
     super();
     this.push(...items);
-    this.updateSize()
+    this.updateSize();
   }
   //
   updateSize() {
@@ -32,17 +32,20 @@ class FirestoreArray<T = DemoDocument> extends Array<T> {
   }
 }
 
-const kanaCollectionName: string = 'kanasv2'
+const kanaCollectionName: string = 'kanasv2';
 
 class MockFirestore {
   documentsMap: Map<string, FirestoreArray<DemoDocument>>;
   // Initialise collection to empty
-  constructor(collectionName: string|undefined = undefined, documents: FirestoreArray<DemoDocument>| undefined = undefined){
+  constructor(
+    collectionName: string | undefined = undefined,
+    documents: FirestoreArray<DemoDocument> | undefined = undefined,
+  ) {
     this.documentsMap = new Map();
     // If provided set an initial db
     if (collectionName && documents) {
-      documents.updateSize()
-      this.set(collectionName, documents)
+      documents.updateSize();
+      this.set(collectionName, documents);
     }
   }
 
@@ -51,43 +54,42 @@ class MockFirestore {
    * @param collectionName the name of the target collection
    * @param documents the documents to be set in the collection
    */
-  set(collectionName: string, documents: FirestoreArray<DemoDocument>): void{
-    documents.updateSize()
-    this.documentsMap.set(collectionName, documents)
+  set(collectionName: string, documents: FirestoreArray<DemoDocument>): void {
+    documents.updateSize();
+    this.documentsMap.set(collectionName, documents);
   }
 
-  reset(collectionName: string){
-    const emptyFirestore = new FirestoreArray([])
-    this.documentsMap.set(collectionName, emptyFirestore)
+  reset(collectionName: string) {
+    const emptyFirestore = new FirestoreArray([]);
+    this.documentsMap.set(collectionName, emptyFirestore);
   }
 
-  get(collectionName: string): FirestoreArray<DemoDocument>{
+  get(collectionName: string): FirestoreArray<DemoDocument> {
     const ret = this.documentsMap.get(collectionName);
     if (ret) {
-      return ret
+      return ret;
     }
-    return emptyFirestore
-    
+    return emptyFirestore;
   }
 
-  addDoc(collectionName: string, document: DemoDocument){
+  addDoc(collectionName: string, document: DemoDocument) {
     const collection = this.documentsMap.get(collectionName);
     if (collection) {
-      collection.push(document)
+      collection.push(document);
     } else {
-      const documents: FirestoreArray = new FirestoreArray([document])
-      documents.updateSize()
-      this.set(collectionName, documents)
+      const documents: FirestoreArray = new FirestoreArray([document]);
+      documents.updateSize();
+      this.set(collectionName, documents);
     }
   }
 
-  getNumDocsInCollection(collectionName: string): number{
-    const collection = this.documentsMap.get(collectionName)
+  getNumDocsInCollection(collectionName: string): number {
+    const collection = this.documentsMap.get(collectionName);
     if (collection) {
-      return collection.length
+      return collection.length;
     }
     // Empty collection length
-    return 0
+    return 0;
   }
 }
 
@@ -105,9 +107,11 @@ const exampleKanas = [
   {en: 'wa', jp: 'わ', category: 'hiragana'},
   {en: 'wo', jp: 'を', category: 'hiragana'},
   {en: 'me', jp: 'め', category: 'hiragana'},
-]
+];
 const exampleFirestore: FirestoreArray<DemoDocument> =
-  new FirestoreArray<DemoDocument>(exampleKanas.map((kana)=> createDemoDocument(kana)));
+  new FirestoreArray<DemoDocument>(
+    exampleKanas.map((kana) => createDemoDocument(kana)),
+  );
 
 const emptyFirestore: FirestoreArray = new FirestoreArray([]);
 
@@ -141,7 +145,7 @@ class Collection {
   }
 
   add_where_result(kanas: FirestoreArray) {
-    const nextFirestore = new MockFirestore(kanaCollectionName, kanas)
+    const nextFirestore = new MockFirestore(kanaCollectionName, kanas);
     this.where_result_queue.push(nextFirestore);
   }
 
@@ -170,5 +174,5 @@ export {
   FirestoreArray,
   emptyFirestore,
   kanaCollectionName,
-  MockFirestore
+  MockFirestore,
 };
