@@ -36,7 +36,59 @@ const kanaCollectionName: string = 'kanasv2'
 
 // type Mockfirestore = {'kanasv2: FirestoreArray<DemoDocument>}
 // Dynamic assignment of collection path
-type MockFirestore = {[p in typeof kanaCollectionName]: FirestoreArray<DemoDocument>};
+
+class MockFirestore {
+  documentsMap: Map<string, FirestoreArray<DemoDocument>>;
+  // Initialise collection to empty
+  constructor(collectionName: string|undefined = undefined, documents: FirestoreArray<DemoDocument>| undefined = undefined){
+    this.documentsMap = new Map();
+    // If provided set an initial db
+    if (collectionName && documents) {
+      this.set(collectionName, documents)
+    }
+  }
+
+  /**
+   * Set the collection at the specified path
+   * @param collectionName the name of the target collection
+   * @param documents the documents to be set in the collection
+   */
+  set(collectionName: string, documents: FirestoreArray<DemoDocument>): void{
+    this.documentsMap.set(collectionName, documents)
+  }
+
+  reset(collectionName: string){
+    const emptyFirestore = new FirestoreArray([])
+    this.documentsMap.set(collectionName, emptyFirestore)
+  }
+
+  get(collectionName: string): FirestoreArray<DemoDocument>{
+    const ret = this.documentsMap.get(collectionName);
+    if (ret) {
+      return ret
+    }
+    return emptyFirestore
+    
+  }
+
+  addDoc(collectionName: string, document: DemoDocument){
+    const collection = this.documentsMap.get(collectionName);
+    if (collection) {
+      collection.push(document)
+    } else {
+      this.set(collectionName, new FirestoreArray([document]))
+    }
+  }
+
+  getNumDocsInCollection(collectionName: string): number{
+    const collection = this.documentsMap.get(collectionName)
+    if (collection) {
+      return collection.length
+    }
+    // Empty collection length
+    return 0
+  }
+}
 
 function createDemoDocument(kana: Kana): DemoDocument {
   return new DemoDocument('', kana);
@@ -71,9 +123,10 @@ class Collection {
 
   get(): Array<any> {
     if (this.path == kanaCollectionName) {
-      const firestoreArray = this.db[kanaCollectionName]
+      const firestoreArray = this.db.get(kanaCollectionName);
+      // Todo: Remove this line
       firestoreArray.updateSize();
-      return this.db[this.path];
+      return firestoreArray;
     } else {
       return [];
     }
@@ -81,15 +134,16 @@ class Collection {
 
   add(kana: any): {id: number} {
     if (this.path == kanaCollectionName) {
-      this.db[kanaCollectionName].push(createDemoDocument(kana));
-      return {id: this.db[kanaCollectionName].length};
+      this.db.addDoc(kanaCollectionName, createDemoDocument(kana));
+      return {id: this.db.getNumDocsInCollection(kanaCollectionName)};
     } else {
       throw new Error('Selected path not valid');
     }
   }
 
   add_where_result(kanas: FirestoreArray) {
-    this.where_result_queue.push({[kanaCollectionName]: kanas});
+    const nextFirestore = new MockFirestore(kanaCollectionName, kanas)
+    this.where_result_queue.push(nextFirestore);
   }
 
   // Designed to auto respond to query calls using pre-determined query results
@@ -100,6 +154,7 @@ class Collection {
     //ERROR HERE RETURN DOESNT CONTAIN QUEUE
     this.where_result_queue.reverse();
     if (ret) {
+      // Todo: Identify if this could lead to a memory leak
       this.db = ret;
       return this;
     } else {
@@ -108,12 +163,13 @@ class Collection {
   }
 }
 
-export type {DemoDocument, MockFirestore};
+export type {DemoDocument};
 export {
   exampleFirestore as exampleDocument,
   createDemoDocument,
   Collection,
   FirestoreArray,
   emptyFirestore,
-  kanaCollectionName
+  kanaCollectionName,
+  MockFirestore
 };

@@ -8,8 +8,6 @@ import {
   beforeEach,
 } from '@jest/globals';
 
-const testConfig = require('firebase-functions-test')();
-
 import * as sinon from 'sinon';
 import type {SinonStub} from 'sinon';
 
@@ -20,28 +18,25 @@ import {
   Collection,
   emptyFirestore,
   exampleDocument,
-  FirestoreArray,
   kanaCollectionName,
+  MockFirestore
 } from './mockFirestore';
-import type {MockFirestore} from './mockFirestore';
 
 let myFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
-// Mock database
-const mockDB: MockFirestore = {
-  [kanaCollectionName]: new FirestoreArray([]),
-};
+// Mock firestore stub
+const mockDB: MockFirestore = new MockFirestore()
 
 let collection: Collection = new Collection(kanaCollectionName, mockDB);
 
-let expectedStatus = 200;
-let expectedResult: string | number = 'Kana already exists: 0';
+let expectedStatus = NaN;
+let expectedResult: string | number = '';
 
 let actualStatus: number = NaN;
 let actualResult: string | number = '';
 
 beforeEach(() => {
-  mockDB[kanaCollectionName] = new FirestoreArray([]);
+  mockDB.reset(kanaCollectionName)
   collection = new Collection(kanaCollectionName, mockDB);
 
   expectedStatus = NaN;
@@ -83,14 +78,11 @@ afterAll(() => {
   // Restore admin.initializeApp() to its original method.
   adminInitStub.restore();
   firestoreStub.restore();
-
-  // Do other cleanup tasks.
-  testConfig.cleanup();
 });
 
 describe('addKana', () => {
   beforeEach(() => {
-    mockDB[kanaCollectionName] = exampleDocument;
+    mockDB.set(kanaCollectionName, exampleDocument);
   });
 
   test('It returns an error message', async () => {
@@ -188,6 +180,9 @@ describe('addKana', () => {
 
 describe('getKanas', () => {
   test('It returns empty', async () => {
+    // Reset DB
+    mockDB.reset(kanaCollectionName)
+
     const req = {headers: {origin: true}, body: {}};
     const res = {
       setHeader: (key: any, value: any) => {},
@@ -210,7 +205,7 @@ describe('getKanas', () => {
   });
 
   test('It returns kanas', async () => {
-    mockDB[kanaCollectionName] = exampleDocument;
+    mockDB.set(kanaCollectionName, exampleDocument);
 
     const req = {headers: {origin: true}, body: {}};
     const res = {
