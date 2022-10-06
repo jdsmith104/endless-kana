@@ -29,21 +29,15 @@ const mockDB: MockFirestore = new MockFirestore()
 
 let collection: Collection = new Collection(kanaCollectionName, mockDB);
 
-let expectedStatus = NaN;
-let expectedResult: string | number = '';
-
 let actualStatus: number = NaN;
-let actualResult: string | number = '';
+let actualJSON: any;
 
 beforeEach(() => {
   mockDB.reset(kanaCollectionName)
   collection = new Collection(kanaCollectionName, mockDB);
 
-  expectedStatus = NaN;
-  expectedResult = '';
-
   actualStatus = NaN;
-  actualResult = '';
+  actualJSON = '';
 });
 
 beforeAll(() => {
@@ -80,6 +74,23 @@ afterAll(() => {
   firestoreStub.restore();
 });
 
+
+const res = {
+  // Required for cors
+  setHeader: (key: any, value: any) => {},
+  getHeader: (value: any) => {},
+  set: (val1: any, val2: any) => {},
+
+  // Expected to be called in return
+  status: (status: number) => {
+    actualStatus = status;
+  },
+  json: (json: any) => {
+    // If this fails, the program exits instead of failing the test
+    actualJSON = json;
+  },
+};
+
 describe('addKana', () => {
   beforeEach(() => {
     mockDB.set(kanaCollectionName, exampleDocument);
@@ -87,60 +98,37 @@ describe('addKana', () => {
 
   test('It returns an error message', async () => {
     const req = {headers: {origin: true}, body: {}};
-    const res = {
-      setHeader: (key: any, value: any) => {},
-      getHeader: (value: any) => {},
-      set: (val1: any, val2: any) => {},
-      status: (payload: number) => {
-        actualStatus = payload;
-      },
-      json: (payload: any) => {
-        actualResult = payload.result;
-      },
-    };
 
     collection.add_where_result(emptyFirestore);
     collection.add_where_result(emptyFirestore);
 
-    expectedStatus = 200;
-    expectedResult = 'Request invalid: kana not added';
+    const expectedStatus = 200;
+    const expectedResult = 'Request invalid: kana not added';
 
     await myFunctions.addKana(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualResult).toBe(expectedResult);
+    expect(actualJSON["result"]).toBe(expectedResult);
   });
+
+
 
   test('It returns a success message', async () => {
     const req = {
       headers: {origin: true},
       query: {en: 'hi', jp: 'ひ', category: 'hiragana'},
     };
-    const res = {
-      // Required for cors
-      setHeader: (key: any, value: any) => {},
-      getHeader: (value: any) => {},
-      set: (val1: any, val2: any) => {},
 
-      // Expected to be called in return
-      status: (payload: number) => {
-        actualStatus = payload;
-      },
-      json: (payload: any) => {
-        // If this fails, the program exits instead of failing the test
-        actualResult = payload.result;
-      },
-    };
-
-    expectedStatus = 201;
-    expectedResult = 'Kana with ID: 1 added.';
+    const expectedStatus = 201;
+    const expectedResult = 'Kana with ID: 1 added.';
 
     collection.add_where_result(emptyFirestore);
     collection.add_where_result(emptyFirestore);
 
     await myFunctions.addKana(req as any, res as any);
-    expect(actualResult).toBe(expectedResult);
+    expect(actualJSON["result"]).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
   });
+
 
   test('It does not add duplicate kana', async () => {
     const req = {
@@ -148,30 +136,16 @@ describe('addKana', () => {
       query: {en: 'ni', jp: 'に', category: 'hiragana'},
     };
 
-    const res = {
-      // Required for cors
-      setHeader: (key: any, value: any) => {},
-      getHeader: (value: any) => {},
-      set: (val1: any, val2: any) => {},
+    const expectedStatus = 200;
+    const expectedResult = 'Kana already exists: kana not added';
 
-      // Expected to be called in return
-      status: (payload: number) => {
-        actualStatus = payload;
-      },
-      json: (payload: any) => {
-        // If this fails, the program exits instead of failing the test
-        actualResult = payload.result;
-      },
-    };
-
-    expectedStatus = 200;
-    expectedResult = 'Kana already exists: kana not added';
-
+    // Set where query results
     collection.add_where_result(exampleDocument);
     collection.add_where_result(exampleDocument);
 
     await myFunctions.addKana(req as any, res as any);
-    expect(actualResult).toBe(expectedResult);
+
+    expect(actualJSON["result"]).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
   });
 
@@ -184,47 +158,27 @@ describe('getKanas', () => {
     mockDB.reset(kanaCollectionName)
 
     const req = {headers: {origin: true}, body: {}};
-    const res = {
-      setHeader: (key: any, value: any) => {},
-      getHeader: (value: any) => {},
-      set: (val1: any, val2: any) => {},
-      status: (payload: number) => {
-        actualStatus = payload;
-      },
-      json: (payload: {result: Array<any>}) => {
-        actualResult = payload.result.length;
-      },
-    };
 
-    expectedStatus = 200;
-    expectedResult = 0;
+    const expectedStatus = 200;
+    const expectedLength = 0;
 
     await myFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualResult).toBe(expectedResult);
+    expect(actualJSON.result.length).toBe(expectedLength);
   });
 
   test('It returns kanas', async () => {
+    // Set mockDB to default type
     mockDB.set(kanaCollectionName, exampleDocument);
 
     const req = {headers: {origin: true}, body: {}};
-    const res = {
-      setHeader: (key: any, value: any) => {},
-      getHeader: (value: any) => {},
-      set: (val1: any, val2: any) => {},
-      status: (payload: number) => {
-        actualStatus = payload;
-      },
-      json: (payload: any) => {
-        expect(payload.result.length).toBe(9);
-      },
-    };
 
-    expectedStatus = 200;
+    const expectedStatus = 200;
+    const expectedLength = exampleDocument.length
 
     await myFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualResult).toBe(expectedResult);
+    expect(actualJSON.result.length).toBe(expectedLength);
   });
 
   // Todo: Test what happens when an error is thrown in API
