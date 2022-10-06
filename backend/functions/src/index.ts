@@ -13,6 +13,8 @@ enum HTPPResponseStatus {
   FAILED = 500,
 }
 
+const kanaCollectionName = 'kanasv2';
+
 // POST request to add a valid kana to database
 exports.addKana = functions.https.onRequest(async (req: Request, res: Response) => {
   try {
@@ -23,7 +25,7 @@ exports.addKana = functions.https.onRequest(async (req: Request, res: Response) 
       const kana: Kana = req.query as unknown as Kana;
       const kanaInCollection: boolean = await isKanaInCollection(kana);
       if (!kanaInCollection) {
-        const writeResult = await db.collection('kanas').add(kana);
+        const writeResult = await db.collection(kanaCollectionName).add(kana);
         res.status(HTPPResponseStatus.CREATED);
         const id: unknown = writeResult.id;
         res.json({result: `Kana with ID: ${id} added.`});
@@ -52,7 +54,7 @@ exports.getKanas = functions.https.onRequest(async (req: Request, res: Response)
     // Todo: Check request type
     // Get database snapshot
     const querySnapshot: FirebaseFirestore.QuerySnapshot = await db
-      .collection('kanas')
+      .collection(kanaCollectionName)
       .get();
 
     const kanas: unknown[] = [];
@@ -91,7 +93,7 @@ function isValidQuery(query: ParsedQs): boolean {
 async function isKanaInCollection(kana: Kana): Promise<boolean> {
   try {
     const collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> =
-      await db.collection('kanas');
+      await db.collection(kanaCollectionName);
 
     const filteredQuery1: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
       await collection.where('jp', '==', kana.jp);

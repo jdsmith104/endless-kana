@@ -21,6 +21,7 @@ import {
   emptyFirestore,
   exampleDocument,
   FirestoreArray,
+  kanaCollectionName,
 } from './mockFirestore';
 import type {MockFirestore} from './mockFirestore';
 
@@ -28,10 +29,10 @@ let myFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
 // Mock database
 const mockDB: MockFirestore = {
-  kanas: new FirestoreArray([]),
+  [kanaCollectionName]: new FirestoreArray([]),
 };
 
-let collection: Collection = new Collection('kanas', mockDB);
+let collection: Collection = new Collection(kanaCollectionName, mockDB);
 
 let expectedStatus = 200;
 let expectedResult: string | number = 'Kana already exists: 0';
@@ -40,8 +41,8 @@ let actualStatus: number = NaN;
 let actualResult: string | number = '';
 
 beforeEach(() => {
-  mockDB.kanas = new FirestoreArray([]);
-  collection = new Collection('kanas', mockDB);
+  mockDB[kanaCollectionName] = new FirestoreArray([]);
+  collection = new Collection(kanaCollectionName, mockDB);
 
   expectedStatus = NaN;
   expectedResult = '';
@@ -89,7 +90,7 @@ afterAll(() => {
 
 describe('addKana', () => {
   beforeEach(() => {
-    mockDB.kanas = exampleDocument;
+    mockDB[kanaCollectionName] = exampleDocument;
   });
 
   test('It returns an error message', async () => {
@@ -209,7 +210,7 @@ describe('getKanas', () => {
   });
 
   test('It returns kanas', async () => {
-    mockDB.kanas = exampleDocument;
+    mockDB[kanaCollectionName] = exampleDocument;
 
     const req = {headers: {origin: true}, body: {}};
     const res = {

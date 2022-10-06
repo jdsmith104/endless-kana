@@ -26,29 +26,35 @@ class FirestoreArray<T = DemoDocument> extends Array<T> {
     this.push(...items);
     this.size = items.length;
   }
+  //
   updateSize() {
     this.size = this.length;
   }
 }
 
-type MockFirestore = {kanas: FirestoreArray<DemoDocument>};
+const kanaCollectionName: string = 'kanasv2'
+
+// type Mockfirestore = {'kanasv2: FirestoreArray<DemoDocument>}
+// Dynamic assignment of collection path
+type MockFirestore = {[p in typeof kanaCollectionName]: FirestoreArray<DemoDocument>};
 
 function createDemoDocument(kana: Kana): DemoDocument {
   return new DemoDocument('', kana);
 }
 
-const exampleDocument: FirestoreArray<DemoDocument> =
-  new FirestoreArray<DemoDocument>([
-    createDemoDocument({en: 'ni', jp: 'に', category: 'hiragana'}),
-    createDemoDocument({en: 'nu', jp: 'ぬ', category: 'hiragana'}),
-    createDemoDocument({en: 'ne', jp: 'ね', category: 'hiragana'}),
-    createDemoDocument({en: 'na', jp: 'な', category: 'hiragana'}),
-    createDemoDocument({en: 'no', jp: 'の', category: 'hiragana'}),
-    createDemoDocument({en: 're', jp: 'れ', category: 'hiragana'}),
-    createDemoDocument({en: 'wa', jp: 'わ', category: 'hiragana'}),
-    createDemoDocument({en: 'wo', jp: 'を', category: 'hiragana'}),
-    createDemoDocument({en: 'me', jp: 'め', category: 'hiragana'}),
-  ]);
+const exampleKanas = [
+  {en: 'ni', jp: 'に', category: 'hiragana'},
+  {en: 'nu', jp: 'ぬ', category: 'hiragana'},
+  {en: 'ne', jp: 'ね', category: 'hiragana'},
+  {en: 'na', jp: 'な', category: 'hiragana'},
+  {en: 'no', jp: 'の', category: 'hiragana'},
+  {en: 're', jp: 'れ', category: 'hiragana'},
+  {en: 'wa', jp: 'わ', category: 'hiragana'},
+  {en: 'wo', jp: 'を', category: 'hiragana'},
+  {en: 'me', jp: 'め', category: 'hiragana'},
+]
+const exampleFirestore: FirestoreArray<DemoDocument> =
+  new FirestoreArray<DemoDocument>(exampleKanas.map((kana)=> createDemoDocument(kana)));
 
 const emptyFirestore: FirestoreArray = new FirestoreArray([]);
 
@@ -64,8 +70,9 @@ class Collection {
   }
 
   get(): Array<any> {
-    if (this.path == 'kanas') {
-      this.db.kanas.updateSize();
+    if (this.path == kanaCollectionName) {
+      const firestoreArray = this.db[kanaCollectionName]
+      firestoreArray.updateSize();
       return this.db[this.path];
     } else {
       return [];
@@ -73,23 +80,19 @@ class Collection {
   }
 
   add(kana: any): {id: number} {
-    if (this.path == 'kanas') {
-      this.db['kanas'].push(createDemoDocument(kana));
-      return {id: this.db['kanas'].length};
+    if (this.path == kanaCollectionName) {
+      this.db[kanaCollectionName].push(createDemoDocument(kana));
+      return {id: this.db[kanaCollectionName].length};
     } else {
       throw new Error('Selected path not valid');
     }
   }
 
-  // add_where_result(kanas: Kana[]){
-  //   const mockFirestore: FirestoreArray<DemoDocument> = new FirestoreArray<DemoDocument>(kanas.map(kana=> createDemoDocument(kana)))
-  //   this.where_result_queue.push(new Collection(this.path, {kanas: mockFirestore}))
-  // }
-
   add_where_result(kanas: FirestoreArray) {
-    this.where_result_queue.push({kanas: kanas});
+    this.where_result_queue.push({[kanaCollectionName]: kanas});
   }
 
+  // Designed to auto respond to query calls using pre-determined query results
   where(attr: string, operator: string, target: any): Collection {
     // Get item at front of queue
     this.where_result_queue.reverse();
@@ -107,9 +110,10 @@ class Collection {
 
 export type {DemoDocument, MockFirestore};
 export {
-  exampleDocument,
+  exampleFirestore as exampleDocument,
   createDemoDocument,
   Collection,
   FirestoreArray,
   emptyFirestore,
+  kanaCollectionName
 };
