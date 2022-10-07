@@ -93,11 +93,7 @@ async function isKanaInCollection(kana: Kana): Promise<boolean> {
     const filteredQuery1: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
       await collection.where('ro', '==', kana.ro);
 
-    const filteredQuery2 = await filteredQuery1.where(
-      'hi',
-      '==',
-      kana.hi,
-    );
+    const filteredQuery2 = await filteredQuery1.where('hi', '==', kana.hi);
 
     const queryResult: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
       await filteredQuery2.get();

@@ -14,40 +14,25 @@ import type {SinonStub} from 'sinon';
 // Require firebase-admin so we can stub out some of its methods.
 import * as admin from 'firebase-admin';
 
-import {
-  MockCollection,
-  emptyDocumentArray,
-  exampleDocumentArray,
-  MockFirestore,
-} from './mockFirestore';
+import {MockCollection, exampleDocumentArray, MockFirestore} from './mockFirestore';
 
 import HTPPResponseStatus from '../src/httpResponseStatus';
-import { kanaCollectionName } from './testConfig';
+import {kanaCollectionName} from './testConfig';
 
 let cloudFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
 // Mock firestore stub
 const mockDB: MockFirestore = new MockFirestore();
 
-let collection: MockCollection = new MockCollection(kanaCollectionName, mockDB);
-
+let collection: MockCollection;
 let actualStatus: number = NaN;
 let actualJSON: any = {};
 
 function getFirestore(): any {
   return {
     collection: (path: string) => {
-      return {
-        get: (): Array<any> => {
-          return collection.get(path);
-        },
-        add: (kana: any): {id: string} => {
-          return collection.add(path, kana);
-        },
-        where: (attr: string, operator: string, target: any): MockCollection => {
-          return collection.where(attr, operator, target);
-        },
-      };
+      collection = new MockCollection(path, mockDB);
+      return collection;
     },
   };
 }
@@ -85,7 +70,6 @@ beforeEach(() => {
 
   actualStatus = NaN;
   actualJSON = {};
-
 });
 
 beforeAll(() => {
@@ -94,7 +78,7 @@ beforeAll(() => {
 
   // Mock the firestore
   firestoreStub = sinon.stub(admin, 'firestore').get(() => {
-    return getFirestore
+    return getFirestore;
   });
 
   cloudFunctions = require('../src/index');
@@ -112,9 +96,6 @@ describe('addKana', () => {
   });
 
   test('It returns an error message', async () => {
-    collection.add_where_result(emptyDocumentArray);
-    collection.add_where_result(emptyDocumentArray);
-
     const expectedStatus = HTPPResponseStatus.OK;
     const expectedResult = 'Request invalid: kana not added';
 
@@ -130,9 +111,6 @@ describe('addKana', () => {
     const expectedStatus = HTPPResponseStatus.CREATED;
     const expectedResult = 'Kana with ID: 1 added.';
 
-    collection.add_where_result(emptyDocumentArray);
-    collection.add_where_result(emptyDocumentArray);
-
     await cloudFunctions.addKana(req as any, res as any);
     expect(actualJSON['result']).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
@@ -143,10 +121,6 @@ describe('addKana', () => {
 
     const expectedStatus = HTPPResponseStatus.OK;
     const expectedResult = 'Kana already exists: kana not added';
-
-    // Set where query results
-    collection.add_where_result(exampleDocumentArray);
-    collection.add_where_result(exampleDocumentArray);
 
     await cloudFunctions.addKana(req as any, res as any);
 

@@ -1,6 +1,5 @@
 export type Kana = {ro: string; ka: string; hi: string};
 
-
 export const exampleKanas: Kana[] = [
   {ro: 'ni', hi: 'に', ka: 'hiragana'},
   {ro: 'nu', hi: 'ぬ', ka: 'hiragana'},

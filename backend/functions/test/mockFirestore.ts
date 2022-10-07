@@ -1,7 +1,6 @@
 import {exampleKanas, Kana} from '../src/kanaModel';
-import { kanaCollectionName } from './testConfig';
 
-class DemoDocument<T=Kana> {
+class DemoDocument<T = Kana> {
   _id: string;
   _data: T;
 
@@ -110,43 +109,45 @@ class MockCollection {
     this.where_result_queue = [];
   }
 
-  get(path: string): Array<any> {
+  get(): Array<any> {
     const firestoreArray = this.db.get(this.path);
     return firestoreArray;
   }
 
-  add(path: string, kana: any): {id: string} {
-      this.db.addDoc(this.path, createDemoDocument(kana));
-      return {id: (this.db.getNumDocsInCollection(this.path)).toString()};
-  }
-
-  add_where_result(kanas: DocumentArray) {
-    const nextFirestore = new MockFirestore(kanaCollectionName, kanas);
-    this.where_result_queue.push(nextFirestore);
+  add(kana: any): {id: string} {
+    this.db.addDoc(this.path, createDemoDocument(kana));
+    return {id: this.db.getNumDocsInCollection(this.path).toString()};
   }
 
   // Designed to auto respond to query calls using pre-determined query results
   where(attr: string, operator: string, target: any): MockCollection {
-    // Get item at front of queue
-    this.where_result_queue.reverse();
-    const ret = this.where_result_queue.pop();
-    //ERROR HERE RETURN DOESNT CONTAIN QUEUE
-    this.where_result_queue.reverse();
-    if (ret) {
-      // Todo: Identify if this could lead to a memory leak
-      this.db = ret;
-      return this;
-    } else {
-      throw new Error('where result not queued');
+    switch (operator) {
+      case '==':
+        const documents: DocumentArray<DemoDocument<Kana>> = this.db.get(this.path);
+        const filteredDocuments: DocumentArray<DemoDocument<Kana>> =
+          new DocumentArray([]);
+        documents.forEach((document) => {
+          const kana: Kana = document.data();
+          const key = attr as keyof typeof kana;
+          if (key && kana[key] == target) {
+            filteredDocuments.push(document);
+          }
+        });
+        this.db.set(this.path, filteredDocuments);
+        break;
+
+      default:
+        throw new Error('mockFirestore: Where operator not implemented');
+        break;
     }
+
+    return this;
   }
 }
 
 export type {DemoDocument};
 export {
   exampleDocumentArray,
-  createDemoDocument,
   MockCollection,
-  emptyDocumentArray,
   MockFirestore,
 };
