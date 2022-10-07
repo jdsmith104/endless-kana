@@ -69,12 +69,12 @@ class ScriptMode(IntEnum):
     PROD = 1
 
 
-def send_to_db(url: str, jp: str, en: str, category: str):
-    query: str = f'?en={en}&jp={jp}&category={category}'
+def send_to_db(url: str, hiragana: str, katakana: str, romanji: str):
+    query: str = f'?ro={romanji}&ka={katakana}&hi={hiragana}'
     try:
         # Format to make the post request
         res = requests.get(
-            url, params={'en': en, 'jp': jp, 'category': category})
+            url, params={'ro': romanji, 'hi': hiragana, 'ka': katakana})
         if (res.status_code == 200):
             print(f'Duplicate entry: {query}')
         elif (res.status_code == 201):
@@ -88,9 +88,8 @@ def send_to_db(url: str, jp: str, en: str, category: str):
 def send_kana_to_url(url: str):
     postUrl = url + '/addKana'
 
-    for hiragana, katakana, en in zip(hiraganaArray, katakanaArray, romanjiArray):
-        send_to_db(postUrl, hiragana, en, "hiragana")
-        send_to_db(postUrl, katakana, en, "katakana")
+    for hiragana, katakana, romanji in zip(hiraganaArray, katakanaArray, romanjiArray):
+        send_to_db(postUrl, hiragana, katakana, romanji)
 
 
 def run(mode: ScriptMode) -> None:
@@ -110,7 +109,7 @@ if __name__ == '__main__':
     try:
         print("Starting script")
         # Set mode to set which url requests are made to
-        mode = ScriptMode.PROD
+        mode = ScriptMode.TEST
         run(mode)
         print("Script running complete")
     except Exception as e:
