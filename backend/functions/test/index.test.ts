@@ -15,24 +15,42 @@ import type {SinonStub} from 'sinon';
 import * as admin from 'firebase-admin';
 
 import {
-  Collection,
-  emptyFirestore,
-  exampleDocument,
-  kanaCollectionName,
+  MockCollection,
+  emptyDocumentArray,
+  exampleDocumentArray,
   MockFirestore,
 } from './mockFirestore';
 
 import HTPPResponseStatus from '../src/httpResponseStatus';
+import { kanaCollectionName } from './testConfig';
 
-let myFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
+let cloudFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
 // Mock firestore stub
 const mockDB: MockFirestore = new MockFirestore();
 
-let collection: Collection = new Collection(kanaCollectionName, mockDB);
+let collection: MockCollection = new MockCollection(kanaCollectionName, mockDB);
 
 let actualStatus: number = NaN;
-let actualJSON: any;
+let actualJSON: any = {};
+
+function getFirestore(): any {
+  return {
+    collection: (path: string) => {
+      return {
+        get: (): Array<any> => {
+          return collection.get(path);
+        },
+        add: (kana: any): {id: string} => {
+          return collection.add(path, kana);
+        },
+        where: (attr: string, operator: string, target: any): MockCollection => {
+          return collection.where(attr, operator, target);
+        },
+      };
+    },
+  };
+}
 
 const req = {
   headers: {origin: true},
@@ -58,12 +76,16 @@ const res = {
 
 beforeEach(() => {
   mockDB.reset(kanaCollectionName);
-  collection = new Collection(kanaCollectionName, mockDB);
+  collection = new MockCollection(kanaCollectionName, mockDB);
 
   // Reset request
   req.body = {};
   req.headers = {origin: true};
   req.query = {};
+
+  actualStatus = NaN;
+  actualJSON = {};
+
 });
 
 beforeAll(() => {
@@ -72,26 +94,10 @@ beforeAll(() => {
 
   // Mock the firestore
   firestoreStub = sinon.stub(admin, 'firestore').get(() => {
-    return function () {
-      return {
-        collection: (path: string) => {
-          return {
-            get: (): Array<any> => {
-              return collection.get();
-            },
-            add: (kana: any): {id: string} => {
-              return collection.add(kana);
-            },
-            where: (attr: string, operator: string, target: any): Collection => {
-              return collection.where(attr, operator, target);
-            },
-          };
-        },
-      };
-    };
+    return getFirestore
   });
 
-  myFunctions = require('../src/index');
+  cloudFunctions = require('../src/index');
 });
 
 afterAll(() => {
@@ -102,17 +108,17 @@ afterAll(() => {
 
 describe('addKana', () => {
   beforeEach(() => {
-    mockDB.set(kanaCollectionName, exampleDocument);
+    mockDB.set(kanaCollectionName, exampleDocumentArray);
   });
 
   test('It returns an error message', async () => {
-    collection.add_where_result(emptyFirestore);
-    collection.add_where_result(emptyFirestore);
+    collection.add_where_result(emptyDocumentArray);
+    collection.add_where_result(emptyDocumentArray);
 
     const expectedStatus = HTPPResponseStatus.OK;
     const expectedResult = 'Request invalid: kana not added';
 
-    await myFunctions.addKana(req as any, res as any);
+    await cloudFunctions.addKana(req as any, res as any);
 
     expect(actualStatus).toBe(expectedStatus);
     expect(actualJSON['result']).toBe(expectedResult);
@@ -124,10 +130,10 @@ describe('addKana', () => {
     const expectedStatus = HTPPResponseStatus.CREATED;
     const expectedResult = 'Kana with ID: 1 added.';
 
-    collection.add_where_result(emptyFirestore);
-    collection.add_where_result(emptyFirestore);
+    collection.add_where_result(emptyDocumentArray);
+    collection.add_where_result(emptyDocumentArray);
 
-    await myFunctions.addKana(req as any, res as any);
+    await cloudFunctions.addKana(req as any, res as any);
     expect(actualJSON['result']).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
   });
@@ -139,10 +145,10 @@ describe('addKana', () => {
     const expectedResult = 'Kana already exists: kana not added';
 
     // Set where query results
-    collection.add_where_result(exampleDocument);
-    collection.add_where_result(exampleDocument);
+    collection.add_where_result(exampleDocumentArray);
+    collection.add_where_result(exampleDocumentArray);
 
-    await myFunctions.addKana(req as any, res as any);
+    await cloudFunctions.addKana(req as any, res as any);
 
     expect(actualJSON['result']).toBe(expectedResult);
     expect(actualStatus).toBe(expectedStatus);
@@ -159,19 +165,31 @@ describe('getKanas', () => {
     const expectedStatus = HTPPResponseStatus.OK;
     const expectedLength = 0;
 
-    await myFunctions.getKanas(req as any, res as any);
+    await cloudFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
     expect(actualJSON.result.length).toBe(expectedLength);
   });
 
   test('It returns kanas', async () => {
     // Set mockDB to default type
-    mockDB.set(kanaCollectionName, exampleDocument);
+    mockDB.set(kanaCollectionName, exampleDocumentArray);
 
     const expectedStatus = HTPPResponseStatus.OK;
-    const expectedLength = exampleDocument.length;
+    const expectedLength = exampleDocumentArray.length;
 
-    await myFunctions.getKanas(req as any, res as any);
+    await cloudFunctions.getKanas(req as any, res as any);
+    expect(actualStatus).toBe(expectedStatus);
+    expect(actualJSON.result.length).toBe(expectedLength);
+  });
+
+  test('It handles errors', async () => {
+    // Set mockDB to default type
+    mockDB.set(kanaCollectionName, exampleDocumentArray);
+
+    const expectedStatus = HTPPResponseStatus.OK;
+    const expectedLength = exampleDocumentArray.length;
+
+    await cloudFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
     expect(actualJSON.result.length).toBe(expectedLength);
   });

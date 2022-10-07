@@ -1,24 +1,21 @@
-import type {Kana} from '../src/kanaModel';
+import {exampleKanas, Kana} from '../src/kanaModel';
+import { kanaCollectionName } from './testConfig';
 
-class DemoDocument {
-  id: string;
-  kana: Kana;
+class DemoDocument<T=Kana> {
+  _id: string;
+  _data: T;
 
-  data(): Kana {
-    return this.kana;
-  }
-  get(prop: string): string {
-    const key = prop as keyof typeof this.kana;
-    return this.kana[key];
+  data(): T {
+    return this._data;
   }
 
-  constructor(id: string, kana: Kana) {
-    this.id = id;
-    this.kana = kana;
+  constructor(id: string, kana: T) {
+    this._id = id;
+    this._data = kana;
   }
 }
 
-class FirestoreArray<T = DemoDocument> extends Array<T> {
+class DocumentArray<T = DemoDocument> extends Array<T> {
   public size: number = 0;
 
   constructor(items: T[]) {
@@ -32,14 +29,12 @@ class FirestoreArray<T = DemoDocument> extends Array<T> {
   }
 }
 
-const kanaCollectionName: string = 'kanasv2';
-
 class MockFirestore {
-  documentsMap: Map<string, FirestoreArray<DemoDocument>>;
+  documentsMap: Map<string, DocumentArray<DemoDocument>>;
   // Initialise collection to empty
   constructor(
     collectionName: string | undefined = undefined,
-    documents: FirestoreArray<DemoDocument> | undefined = undefined,
+    documents: DocumentArray<DemoDocument> | undefined = undefined,
   ) {
     this.documentsMap = new Map();
     // If provided set an initial db
@@ -54,22 +49,22 @@ class MockFirestore {
    * @param collectionName the name of the target collection
    * @param documents the documents to be set in the collection
    */
-  set(collectionName: string, documents: FirestoreArray<DemoDocument>): void {
+  set(collectionName: string, documents: DocumentArray<DemoDocument>): void {
     documents.updateSize();
     this.documentsMap.set(collectionName, documents);
   }
 
   reset(collectionName: string) {
-    const emptyFirestore = new FirestoreArray([]);
+    const emptyFirestore = new DocumentArray([]);
     this.documentsMap.set(collectionName, emptyFirestore);
   }
 
-  get(collectionName: string): FirestoreArray<DemoDocument> {
+  get(collectionName: string): DocumentArray<DemoDocument> {
     const ret = this.documentsMap.get(collectionName);
     if (ret) {
       return ret;
     }
-    return emptyFirestore;
+    return emptyDocumentArray;
   }
 
   addDoc(collectionName: string, document: DemoDocument) {
@@ -77,7 +72,7 @@ class MockFirestore {
     if (collection) {
       collection.push(document);
     } else {
-      const documents: FirestoreArray = new FirestoreArray([document]);
+      const documents: DocumentArray = new DocumentArray([document]);
       documents.updateSize();
       this.set(collectionName, documents);
     }
@@ -97,26 +92,14 @@ function createDemoDocument(kana: Kana): DemoDocument {
   return new DemoDocument('', kana);
 }
 
-const exampleKanas: Kana[] = [
-  {ro: 'ni', hi: 'に', ka: 'hiragana'},
-  {ro: 'nu', hi: 'ぬ', ka: 'hiragana'},
-  {ro: 'ne', hi: 'ね', ka: 'hiragana'},
-  {ro: 'na', hi: 'な', ka: 'hiragana'},
-  {ro: 'no', hi: 'の', ka: 'hiragana'},
-  {ro: 're', hi: 'れ', ka: 'hiragana'},
-  {ro: 'wa', hi: 'わ', ka: 'hiragana'},
-  {ro: 'wo', hi: 'を', ka: 'hiragana'},
-  {ro: 'me', hi: 'め', ka: 'hiragana'},
-];
-
-const exampleFirestore: FirestoreArray<DemoDocument> =
-  new FirestoreArray<DemoDocument>(
+const exampleDocumentArray: DocumentArray<DemoDocument> =
+  new DocumentArray<DemoDocument>(
     exampleKanas.map((kana) => createDemoDocument(kana)),
   );
 
-const emptyFirestore: FirestoreArray = new FirestoreArray([]);
+const emptyDocumentArray: DocumentArray = new DocumentArray([]);
 
-class Collection {
+class MockCollection {
   path: string;
   db: MockFirestore;
   where_result_queue: Array<MockFirestore>;
@@ -127,31 +110,23 @@ class Collection {
     this.where_result_queue = [];
   }
 
-  get(): Array<any> {
-    if (this.path == kanaCollectionName) {
-      const firestoreArray = this.db.get(kanaCollectionName);
-      return firestoreArray;
-    } else {
-      return [];
-    }
+  get(path: string): Array<any> {
+    const firestoreArray = this.db.get(this.path);
+    return firestoreArray;
   }
 
-  add(kana: any): {id: string} {
-    if (this.path == kanaCollectionName) {
-      this.db.addDoc(kanaCollectionName, createDemoDocument(kana));
-      return {id: (this.db.getNumDocsInCollection(kanaCollectionName)).toString()};
-    } else {
-      throw new Error('Selected path not valid');
-    }
+  add(path: string, kana: any): {id: string} {
+      this.db.addDoc(this.path, createDemoDocument(kana));
+      return {id: (this.db.getNumDocsInCollection(this.path)).toString()};
   }
 
-  add_where_result(kanas: FirestoreArray) {
+  add_where_result(kanas: DocumentArray) {
     const nextFirestore = new MockFirestore(kanaCollectionName, kanas);
     this.where_result_queue.push(nextFirestore);
   }
 
   // Designed to auto respond to query calls using pre-determined query results
-  where(attr: string, operator: string, target: any): Collection {
+  where(attr: string, operator: string, target: any): MockCollection {
     // Get item at front of queue
     this.where_result_queue.reverse();
     const ret = this.where_result_queue.pop();
@@ -169,11 +144,9 @@ class Collection {
 
 export type {DemoDocument};
 export {
-  exampleFirestore as exampleDocument,
+  exampleDocumentArray,
   createDemoDocument,
-  Collection,
-  FirestoreArray,
-  emptyFirestore,
-  kanaCollectionName,
+  MockCollection,
+  emptyDocumentArray,
   MockFirestore,
 };
