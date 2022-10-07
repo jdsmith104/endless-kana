@@ -1,2 +1,2 @@
-export type Kana = { en: string; jp: string; category: string };
-export const emptyKana: Kana = { en: '', jp: '', category: '' };
+export type Kana = { ro: string; ka: string; hi: string };
+export const emptyKana: Kana = { ro: '', ka: '', hi: '' };

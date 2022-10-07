@@ -15,13 +15,13 @@ function AnswerContainer(props: AnswerContainerProps) {
     <div className="container">
       {choices.map((item) => (
         <IonButton
-          key={item.en}
+          key={item.ro}
           onClick={() => {
             answerClicked.onClick(item);
           }}
         >
-          {mode === 'en' && item.en}
-          {mode !== 'en' && item.jp}
+          {mode === 'en' && item.ro}
+          {mode !== 'en' && item.hi}
         </IonButton>
       ))}
     </div>

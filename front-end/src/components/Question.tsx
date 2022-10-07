@@ -8,9 +8,9 @@ function Question(props: QuestionProps) {
   const { question, mode } = props;
   let displayQuestion: string;
   if (mode === 'en') {
-    displayQuestion = question.en;
+    displayQuestion = question.ro;
   } else {
-    displayQuestion = question.jp;
+    displayQuestion = question.hi;
   }
   return (
     <div className="tile">
