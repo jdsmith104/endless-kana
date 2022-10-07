@@ -97,17 +97,18 @@ function createDemoDocument(kana: Kana): DemoDocument {
   return new DemoDocument('', kana);
 }
 
-const exampleKanas = [
-  {en: 'ni', jp: 'に', category: 'hiragana'},
-  {en: 'nu', jp: 'ぬ', category: 'hiragana'},
-  {en: 'ne', jp: 'ね', category: 'hiragana'},
-  {en: 'na', jp: 'な', category: 'hiragana'},
-  {en: 'no', jp: 'の', category: 'hiragana'},
-  {en: 're', jp: 'れ', category: 'hiragana'},
-  {en: 'wa', jp: 'わ', category: 'hiragana'},
-  {en: 'wo', jp: 'を', category: 'hiragana'},
-  {en: 'me', jp: 'め', category: 'hiragana'},
+const exampleKanas: Kana[] = [
+  {ro: 'ni', hi: 'に', ka: 'hiragana'},
+  {ro: 'nu', hi: 'ぬ', ka: 'hiragana'},
+  {ro: 'ne', hi: 'ね', ka: 'hiragana'},
+  {ro: 'na', hi: 'な', ka: 'hiragana'},
+  {ro: 'no', hi: 'の', ka: 'hiragana'},
+  {ro: 're', hi: 'れ', ka: 'hiragana'},
+  {ro: 'wa', hi: 'わ', ka: 'hiragana'},
+  {ro: 'wo', hi: 'を', ka: 'hiragana'},
+  {ro: 'me', hi: 'め', ka: 'hiragana'},
 ];
+
 const exampleFirestore: FirestoreArray<DemoDocument> =
   new FirestoreArray<DemoDocument>(
     exampleKanas.map((kana) => createDemoDocument(kana)),
@@ -135,10 +136,10 @@ class Collection {
     }
   }
 
-  add(kana: any): {id: number} {
+  add(kana: any): {id: string} {
     if (this.path == kanaCollectionName) {
       this.db.addDoc(kanaCollectionName, createDemoDocument(kana));
-      return {id: this.db.getNumDocsInCollection(kanaCollectionName)};
+      return {id: (this.db.getNumDocsInCollection(kanaCollectionName)).toString()};
     } else {
       throw new Error('Selected path not valid');
     }

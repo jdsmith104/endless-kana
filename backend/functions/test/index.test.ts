@@ -79,7 +79,7 @@ beforeAll(() => {
             get: (): Array<any> => {
               return collection.get();
             },
-            add: (kana: any): {id: number} => {
+            add: (kana: any): {id: string} => {
               return collection.add(kana);
             },
             where: (attr: string, operator: string, target: any): Collection => {
@@ -119,7 +119,7 @@ describe('addKana', () => {
   });
 
   test('It returns a success message', async () => {
-    req.query = {en: 'hi', jp: 'ひ', category: 'hiragana'};
+    req.query = {ro: 'hi', hi: 'ひ', ka: 'ヒ'};
 
     const expectedStatus = HTPPResponseStatus.CREATED;
     const expectedResult = 'Kana with ID: 1 added.';
@@ -133,7 +133,7 @@ describe('addKana', () => {
   });
 
   test('It does not add duplicate kana', async () => {
-    req.query = {en: 'ni', jp: 'に', category: 'hiragana'};
+    req.query = {ro: 'ni', hi: 'に', ka: 'ニ'};
 
     const expectedStatus = HTPPResponseStatus.OK;
     const expectedResult = 'Kana already exists: kana not added';

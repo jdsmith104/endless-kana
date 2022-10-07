@@ -1,1 +1,1 @@
-export type Kana = {en: string; jp: string; category: string};
+export type Kana = {ro: string; ka: string; hi: string};

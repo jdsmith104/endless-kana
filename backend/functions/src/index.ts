@@ -74,7 +74,7 @@ exports.getKanas = functions.https.onRequest(async (req: Request, res: Response)
  */
 function isValidQuery(query: ParsedQs): boolean {
   // Rejects non-truthy value in any parameter
-  if (query && query.en && query.jp && query.category) {
+  if (query && query.ro && query.ka && query.hi) {
     return true;
   }
   return false;
@@ -91,24 +91,20 @@ async function isKanaInCollection(kana: Kana): Promise<boolean> {
       await db.collection(kanaCollectionName);
 
     const filteredQuery1: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
-      await collection.where('jp', '==', kana.jp);
+      await collection.where('ro', '==', kana.ro);
 
     const filteredQuery2 = await filteredQuery1.where(
-      'category',
+      'hi',
       '==',
-      kana.category,
+      kana.hi,
     );
 
-    const q: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
+    const queryResult: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
       await filteredQuery2.get();
 
-    const size = q.size;
-
-    const isKanaFound: boolean = size > 0;
+    const isKanaFound: boolean = queryResult.size > 0;
 
     return isKanaFound;
-
-    console.log(q);
   } catch (error) {
     console.error(error);
     return true;
