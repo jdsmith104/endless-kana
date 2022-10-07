@@ -1,21 +1,26 @@
-import {exampleKanas, Kana} from '../src/kanaModel';
-
-class DemoDocument<T = Kana> {
+/**
+ * DemoDocument class
+ */
+class DemoDocument<T> {
   _id: string;
   _data: T;
 
+  /**
+   * Get the data in the document
+   * @return T the document data
+   */
   data(): T {
     return this._data;
   }
 
-  constructor(id: string, kana: T) {
+  constructor(id: string, data: T) {
     this._id = id;
-    this._data = kana;
+    this._data = data;
   }
 }
 
-class DocumentArray<T = DemoDocument> extends Array<T> {
-  public size: number = 0;
+class DocumentArray<T> extends Array<T> {
+  public size = 0;
 
   constructor(items: T[]) {
     super();
@@ -28,19 +33,11 @@ class DocumentArray<T = DemoDocument> extends Array<T> {
   }
 }
 
-class MockFirestore {
-  documentsMap: Map<string, DocumentArray<DemoDocument>>;
+class MockFirestore<DocType> {
+  documentsMap: Map<string, DocumentArray<DemoDocument<DocType>>>;
   // Initialise collection to empty
-  constructor(
-    collectionName: string | undefined = undefined,
-    documents: DocumentArray<DemoDocument> | undefined = undefined,
-  ) {
+  constructor() {
     this.documentsMap = new Map();
-    // If provided set an initial db
-    if (collectionName && documents) {
-      documents.updateSize();
-      this.set(collectionName, documents);
-    }
   }
 
   /**
@@ -48,7 +45,10 @@ class MockFirestore {
    * @param collectionName the name of the target collection
    * @param documents the documents to be set in the collection
    */
-  set(collectionName: string, documents: DocumentArray<DemoDocument>): void {
+  set(
+    collectionName: string,
+    documents: DocumentArray<DemoDocument<DocType>>,
+  ): void {
     documents.updateSize();
     this.documentsMap.set(collectionName, documents);
   }
@@ -58,20 +58,22 @@ class MockFirestore {
     this.documentsMap.set(collectionName, emptyFirestore);
   }
 
-  get(collectionName: string): DocumentArray<DemoDocument> {
+  get(collectionName: string): DocumentArray<DemoDocument<DocType>> {
     const ret = this.documentsMap.get(collectionName);
     if (ret) {
       return ret;
     }
-    return emptyDocumentArray;
+    return new DocumentArray<DemoDocument<DocType>>([]);
   }
 
-  addDoc(collectionName: string, document: DemoDocument) {
+  addDoc(collectionName: string, document: DemoDocument<DocType>) {
     const collection = this.documentsMap.get(collectionName);
     if (collection) {
       collection.push(document);
     } else {
-      const documents: DocumentArray = new DocumentArray([document]);
+      const documents: DocumentArray<DemoDocument<DocType>> = new DocumentArray([
+        document,
+      ]);
       documents.updateSize();
       this.set(collectionName, documents);
     }
@@ -87,23 +89,17 @@ class MockFirestore {
   }
 }
 
-function createDemoDocument(kana: Kana): DemoDocument {
-  return new DemoDocument('', kana);
+function createDemoDocument<DocType>(data: DocType): DemoDocument<DocType> {
+  const doc = new DemoDocument<DocType>('', data);
+  return doc;
 }
 
-const exampleDocumentArray: DocumentArray<DemoDocument> =
-  new DocumentArray<DemoDocument>(
-    exampleKanas.map((kana) => createDemoDocument(kana)),
-  );
-
-const emptyDocumentArray: DocumentArray = new DocumentArray([]);
-
-class MockCollection {
+class MockCollection<DocType> {
   path: string;
-  db: MockFirestore;
-  where_result_queue: Array<MockFirestore>;
+  db: MockFirestore<DocType>;
+  where_result_queue: Array<MockFirestore<DocType>>;
 
-  constructor(path: string, db: MockFirestore) {
+  constructor(path: string, db: MockFirestore<DocType>) {
     this.path = path;
     this.db = db;
     this.where_result_queue = [];
@@ -114,22 +110,24 @@ class MockCollection {
     return firestoreArray;
   }
 
-  add(kana: any): {id: string} {
-    this.db.addDoc(this.path, createDemoDocument(kana));
+  add(data: any): {id: string} {
+    this.db.addDoc(this.path, createDemoDocument(data));
     return {id: this.db.getNumDocsInCollection(this.path).toString()};
   }
 
   // Designed to auto respond to query calls using pre-determined query results
-  where(attr: string, operator: string, target: any): MockCollection {
+  where(attr: string, operator: string, target: any): MockCollection<DocType> {
     switch (operator) {
       case '==':
-        const documents: DocumentArray<DemoDocument<Kana>> = this.db.get(this.path);
-        const filteredDocuments: DocumentArray<DemoDocument<Kana>> =
+        const documents: DocumentArray<DemoDocument<DocType>> = this.db.get(
+          this.path,
+        );
+        const filteredDocuments: DocumentArray<DemoDocument<DocType>> =
           new DocumentArray([]);
         documents.forEach((document) => {
-          const kana: Kana = document.data();
-          const key = attr as keyof typeof kana;
-          if (key && kana[key] == target) {
+          const data: DocType = document.data();
+          const key = attr as keyof typeof data;
+          if (key && data[key] == target) {
             filteredDocuments.push(document);
           }
         });
@@ -146,8 +144,4 @@ class MockCollection {
 }
 
 export type {DemoDocument};
-export {
-  exampleDocumentArray,
-  MockCollection,
-  MockFirestore,
-};
+export {MockCollection, MockFirestore, DocumentArray, createDemoDocument};

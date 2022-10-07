@@ -14,17 +14,18 @@ import type {SinonStub} from 'sinon';
 // Require firebase-admin so we can stub out some of its methods.
 import * as admin from 'firebase-admin';
 
-import {MockCollection, exampleDocumentArray, MockFirestore} from './mockFirestore';
+import {MockCollection, MockFirestore} from './mockFirestore';
 
 import HTPPResponseStatus from '../src/httpResponseStatus';
-import {kanaCollectionName} from './testConfig';
+import {exampleDocumentArray, kanaCollectionName} from './testConfig';
+import {Kana} from '../src/kanaModel';
 
 let cloudFunctions: any, adminInitStub: SinonStub, firestoreStub: SinonStub;
 
 // Mock firestore stub
-const mockDB: MockFirestore = new MockFirestore();
+const mockDB: MockFirestore<Kana> = new MockFirestore();
 
-let collection: MockCollection;
+let collection: MockCollection<Kana>;
 let actualStatus: number = NaN;
 let actualJSON: any = {};
 
