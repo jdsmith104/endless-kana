@@ -28,10 +28,14 @@ const mockDB: MockFirestore<Kana> = new MockFirestore();
 let collection: MockCollection<Kana>;
 let actualStatus: number = NaN;
 let actualJSON: any = {};
+let throwCollectionError: boolean = false;
 
 function getFirestore(): any {
   return {
     collection: (path: string) => {
+      if (throwCollectionError) {
+        throw new Error("");
+      }
       collection = new MockCollection(path, mockDB);
       return collection;
     },
@@ -63,6 +67,7 @@ const res = {
 beforeEach(() => {
   mockDB.reset(kanaCollectionName);
   collection = new MockCollection(kanaCollectionName, mockDB);
+  throwCollectionError = false;
 
   // Reset request
   req.body = {};
@@ -129,7 +134,19 @@ describe('addKana', () => {
     expect(actualStatus).toBe(expectedStatus);
   });
 
-  // Todo: Test what happens when an error is thrown in API
+
+  test('It handles errors', async () => {
+    throwCollectionError = true;
+
+    req.query = {ro: 'hi', hi: 'ひ', ka: 'ヒ'};
+
+    const expectedStatus = HTPPResponseStatus.FAILED;
+    const expectedResult = "Unable to add kana";
+
+    await cloudFunctions.addKana(req as any, res as any);
+    expect(actualStatus).toBe(expectedStatus);
+    expect(actualJSON.result).toBe(expectedResult);
+  });
 });
 
 describe('getKanas', () => {
@@ -158,16 +175,17 @@ describe('getKanas', () => {
   });
 
   test('It handles errors', async () => {
+
+    throwCollectionError = true;
+
     // Set mockDB to default type
     mockDB.set(kanaCollectionName, exampleDocumentArray);
 
-    const expectedStatus = HTPPResponseStatus.OK;
-    const expectedLength = exampleDocumentArray.length;
+    const expectedStatus = HTPPResponseStatus.FAILED;
+    const expectedResult = "Unable to get kanas";
 
     await cloudFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualJSON.result.length).toBe(expectedLength);
+    expect(actualJSON.result).toBe(expectedResult);
   });
-
-  // Todo: Test what happens when an error is thrown in API
 });

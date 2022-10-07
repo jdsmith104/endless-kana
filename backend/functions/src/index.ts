@@ -38,7 +38,7 @@ exports.addKana = functions.https.onRequest(async (req: Request, res: Response) 
     }
   } catch (error: unknown) {
     res.status(HTPPResponseStatus.FAILED);
-    res.json('Unable to add kana');
+    res.json({result: 'Unable to add kana'});
   }
 });
 
@@ -63,7 +63,7 @@ exports.getKanas = functions.https.onRequest(async (req: Request, res: Response)
     res.json({result: kanas});
   } catch (error: unknown) {
     res.status(HTPPResponseStatus.FAILED);
-    res.json('Unable to get kanas');
+    res.json({result: 'Unable to get kanas'});
   }
 });
 
@@ -86,23 +86,18 @@ function isValidQuery(query: ParsedQs): boolean {
  * @return {boolean} true if kana is not already in database, false otherwise
  */
 async function isKanaInCollection(kana: Kana): Promise<boolean> {
-  try {
-    const collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> =
-      await db.collection(kanaCollectionName);
+  const collection: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData> =
+    await db.collection(kanaCollectionName);
 
-    const filteredQuery1: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
-      await collection.where('ro', '==', kana.ro);
+  const filteredQuery1: FirebaseFirestore.Query<FirebaseFirestore.DocumentData> =
+    await collection.where('ro', '==', kana.ro);
 
-    const filteredQuery2 = await filteredQuery1.where('hi', '==', kana.hi);
+  const filteredQuery2 = await filteredQuery1.where('hi', '==', kana.hi);
 
-    const queryResult: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
-      await filteredQuery2.get();
+  const queryResult: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData> =
+    await filteredQuery2.get();
 
-    const isKanaFound: boolean = queryResult.size > 0;
+  const isKanaFound: boolean = queryResult.size > 0;
 
-    return isKanaFound;
-  } catch (error) {
-    console.error(error);
-    return true;
-  }
+  return isKanaFound;
 }
