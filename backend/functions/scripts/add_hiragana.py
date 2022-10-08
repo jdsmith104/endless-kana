@@ -4,7 +4,7 @@ from enum import IntEnum
 
 # The order of these arrays is signficant
 
-hiraganaArray = [
+HIRAGANAS = [
     'あ', 'い', 'う', 'え', 'お',
     'か', 'き', 'く', 'け', 'こ',
     'さ', 'し', 'す', 'せ', 'そ',
@@ -23,7 +23,7 @@ hiraganaArray = [
     'ぱ', 'ぴ', 'ぷ', 'ぺ', 'ぽ',
 ]
 
-katakanaArray = [
+KATAKANAS = [
     'ア', 'イ', 'ウ', 'エ', 'オ',
     'カ', 'キ', 'ク', 'ケ', 'コ',
     'サ', 'シ', 'ス', 'セ', 'ソ',
@@ -43,7 +43,7 @@ katakanaArray = [
 
 ]
 
-romanjiArray = [
+ROMANJIS = [
     'a', 'i', 'u', 'e', 'o',
     'ka', 'ki', 'ku', 'ke', 'ko',
     'sa', 'shi', 'su', 'se', 'so',
@@ -56,7 +56,7 @@ romanjiArray = [
     'wa', 'wi',        'we', 'wo',
                 'n',
     'ga', 'gi', 'gu', 'ge', 'go',
-    'za', 'zi', 'zu', 'ze', 'zo',
+    'za', 'ji', 'zu', 'ze', 'zo',
     'da', 'di', 'du', 'de', 'do',
     'ba', 'bi', 'bu', 'be', 'bo',
     'pa', 'pi', 'pu', 'pe', 'po',
@@ -88,7 +88,7 @@ def send_to_db(url: str, hiragana: str, katakana: str, romanji: str):
 def send_kana_to_url(url: str):
     postUrl = url + '/addKana'
 
-    for hiragana, katakana, romanji in zip(hiraganaArray, katakanaArray, romanjiArray):
+    for hiragana, katakana, romanji in zip(HIRAGANAS, KATAKANAS, ROMANJIS):
         send_to_db(postUrl, hiragana, katakana, romanji)
 
 
