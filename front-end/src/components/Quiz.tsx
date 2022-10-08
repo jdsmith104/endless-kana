@@ -7,6 +7,7 @@ import AnswerContainer from './AnswerContainer';
 import Notification from './Notification';
 import useQuizStats, { getChoicesFromKana } from './Quiz.controller';
 import QuizMode from './Quiz.model';
+import './Quiz.css';
 
 type QuizProps = { kanas: Kana[] };
 

@@ -1,5 +1,7 @@
 :root {
-  --main-custom: #04724d;
+  --custom-primary: #04724d;
+  --custom-secondary: #62f9c7;
+  --custom-accent: #f4f4f9;
 }
 
 #page {
@@ -14,7 +16,12 @@
 }
 
 #page {
-  background: linear-gradient(-45deg, #000000, #586f7c, #b8dbd9, var(--main-custom));
+  background: linear-gradient(
+    -45deg,
+    var(--custom-accent),
+    var(--custom-secondary),
+    var(--custom-primary)
+  );
   background-size: 400% 400%;
   animation: gradient 15s ease infinite;
   height: 100vh;
