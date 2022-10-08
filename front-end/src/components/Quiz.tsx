@@ -5,8 +5,11 @@ import { getRandomNumber } from '../common/shuffle';
 import Question from './Question';
 import AnswerContainer from './AnswerContainer';
 import Notification from './Notification';
-import useQuizStats, { getChoicesFromKana } from './Quiz.controller';
-import QuizMode from './Quiz.model';
+import useQuizStats, {
+  getResetAnswersFromKana,
+  selectAnswer,
+} from './Quiz.controller';
+import QuizMode, { Answer } from './Quiz.model';
 import './Quiz.css';
 
 type QuizProps = { kanas: Kana[] };
@@ -23,15 +26,20 @@ function Quiz(props: QuizProps) {
   const { answerCorrect, answerNotCorrect } = useQuizStats();
 
   const [solution, setSolution] = useState<Kana>(emptyKana);
-  const [choices, setChoices] = useState<Array<any>>([]);
+  // Consider changing the type from Array to Map to make selectAnswer easier to read
+  const [answers, setAnswers] = useState<Array<Answer>>([]);
   const [notification, setNotification] = useState('');
   const [mode, setMode] = useState(QuizMode.Katakana);
 
   async function refreshQuestionAndAnswers() {
-    const nextChoices: Kana[] = await getChoicesFromKana(kanas, CHOICES_COUNT);
-    setChoices(nextChoices);
-    setSolution(nextChoices[getRandomNumber(CHOICES_COUNT)]);
+    const nextAnswers: Answer[] = await getResetAnswersFromKana(
+      kanas,
+      CHOICES_COUNT,
+    );
+    setAnswers(nextAnswers);
+    setSolution(nextAnswers[getRandomNumber(CHOICES_COUNT)].kana);
     setNotification(NOTIFICATIONS['New question']);
+    // Reset all Asnwer things
   }
 
   // React hook for checking when kanas (mirror of db) has been updated
@@ -48,14 +56,15 @@ function Quiz(props: QuizProps) {
       <Notification notification={notification} />
 
       <AnswerContainer
-        choices={choices}
+        answers={answers}
         mode="en"
         answerClicked={{
-          onClick(selected: Kana): void {
-            if (selected === solution) {
+          onClick(selectedAnswer: Answer): void {
+            if (selectedAnswer.kana === solution) {
               refreshQuestionAndAnswers();
-              answerCorrect(selected);
+              answerCorrect(selectedAnswer.kana);
             } else {
+              selectAnswer(selectedAnswer, answers);
               setNotification(NOTIFICATIONS.Retry);
               answerNotCorrect();
             }
