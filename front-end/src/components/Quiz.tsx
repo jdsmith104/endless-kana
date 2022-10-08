@@ -1,3 +1,4 @@
+import { IonButton } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { emptyKana, Kana } from '../common/kanas.model';
 import { getRandomNumber } from '../common/shuffle';
@@ -5,6 +6,8 @@ import Question from './Question';
 import AnswerContainer from './AnswerContainer';
 import Notification from './Notification';
 import useQuizStats, { getChoicesFromKana } from './Quiz.controller';
+import QuizMode from './Quiz.model';
+import './Quiz.css';
 
 type QuizProps = { kanas: Kana[] };
 
@@ -22,6 +25,7 @@ function Quiz(props: QuizProps) {
   const [solution, setSolution] = useState<Kana>(emptyKana);
   const [choices, setChoices] = useState<Array<any>>([]);
   const [notification, setNotification] = useState('');
+  const [mode, setMode] = useState(QuizMode.Katakana);
 
   async function refreshQuestionAndAnswers() {
     const nextChoices: Kana[] = await getChoicesFromKana(kanas, CHOICES_COUNT);
@@ -40,7 +44,7 @@ function Quiz(props: QuizProps) {
 
   return (
     <div>
-      <Question question={solution} mode="jp" />
+      <Question question={solution} mode={mode} />
       <Notification notification={notification} />
 
       <AnswerContainer
@@ -58,6 +62,18 @@ function Quiz(props: QuizProps) {
           },
         }}
       />
+      <IonButton
+        className="mode-toggle"
+        onClick={() => {
+          if (mode === QuizMode.Katakana) {
+            setMode(QuizMode.Hiragana);
+          } else {
+            setMode(QuizMode.Katakana);
+          }
+        }}
+      >
+        Mode: {mode}
+      </IonButton>
     </div>
   );
 }
