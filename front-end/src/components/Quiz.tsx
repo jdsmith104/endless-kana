@@ -62,6 +62,7 @@ function Quiz(props: QuizProps) {
         }}
       />
       <IonButton
+        className="mode-toggle"
         onClick={() => {
           if (mode === QuizMode.Katakana) {
             setMode(QuizMode.Hiragana);
@@ -70,7 +71,7 @@ function Quiz(props: QuizProps) {
           }
         }}
       >
-        Toggle mode!
+        Mode: {mode}
       </IonButton>
     </div>
   );

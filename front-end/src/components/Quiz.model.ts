@@ -1,7 +1,7 @@
 enum QuizMode {
-  Romanji = 1,
-  Katakana,
-  Hiragana,
+  Romanji = 'Romanji',
+  Katakana = 'Katakana',
+  Hiragana = 'Hiragana',
 }
 
 export default QuizMode;
