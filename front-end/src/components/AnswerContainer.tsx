@@ -1,27 +1,28 @@
 import { IonButton } from '@ionic/react';
 import React from 'react';
-import { Kana } from '../common/kanas.model';
 import './AnswerContainer.css';
+import { Answer } from './Quiz.model';
 
 type AnswerContainerProps = {
-  choices: Kana[];
+  answers: Answer[];
   mode: string;
-  answerClicked: { onClick(kana: Kana): void };
+  answerClicked: { onClick(answer: Answer): void };
 };
 
 function AnswerContainer(props: AnswerContainerProps) {
-  const { choices, mode, answerClicked } = props;
+  const { answers, mode, answerClicked } = props;
   return (
     <div className="container">
-      {choices.map((item) => (
+      {answers.map((item) => (
         <IonButton
-          key={item.ro}
+          key={item.kana.ro}
           onClick={() => {
             answerClicked.onClick(item);
           }}
+          disabled={item.selected}
         >
-          {mode === 'en' && item.ro}
-          {mode !== 'en' && item.hi}
+          {mode === 'en' && item.kana.ro}
+          {mode !== 'en' && item.kana.hi}
         </IonButton>
       ))}
     </div>
