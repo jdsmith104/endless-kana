@@ -152,9 +152,9 @@ http://ionicframework.com/docs/theming/ */
     --ion-color-light-tint: #383a3e;
 
     /** custom **/
-    --custom-primary: #04724d;
+    /* --custom-primary: #04724d;
     --custom-secondary: #022719;
-    --custom-accent: #000000;
+    --custom-accent: #000000; */
   }
 
   /*
