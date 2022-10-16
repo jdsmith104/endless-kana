@@ -1,5 +1,5 @@
 import React from 'react';
-import './Notification.css';
+import '../theme/Notification.css';
 
 type NotificationProps = { notification: string };
 

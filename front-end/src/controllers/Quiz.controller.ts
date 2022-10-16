@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Kana } from '../common/kanas.model';
+import { Kana } from '../models/kanas.model';
 import { getRandomNumber } from '../common/shuffle';
-import { Answer } from './Quiz.model';
+import { Answer } from '../models/Quiz.model';
 
 const DEFAULT_SELECTED = false;
 

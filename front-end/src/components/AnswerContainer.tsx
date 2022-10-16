@@ -1,7 +1,7 @@
 import { IonButton } from '@ionic/react';
 import React from 'react';
-import './AnswerContainer.css';
-import { Answer } from './Quiz.model';
+import '../theme/AnswerContainer.css';
+import { Answer } from '../models/Quiz.model';
 
 type AnswerContainerProps = {
   answers: Answer[];

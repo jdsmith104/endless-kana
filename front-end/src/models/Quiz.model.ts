@@ -1,4 +1,4 @@
-import { Kana } from '../common/kanas.model';
+import { Kana } from './kanas.model';
 
 enum QuizMode {
   Romanji = 'Romanji',
