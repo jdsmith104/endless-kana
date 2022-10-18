@@ -6,4 +6,6 @@
 .notification-container p {
   font-size: 20px;
   color: var(--custom-primary);
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
