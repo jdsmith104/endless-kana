@@ -1,16 +1,16 @@
 import React from 'react';
 import { Kana } from '../models/kanas.model';
 import '../theme/Question.css';
-import QuizMode from '../models/Quiz.model';
+import KanaMode from '../models/Quiz.model';
 
-type QuestionProps = { question: Kana; mode: QuizMode };
+type QuestionProps = { question: Kana; mode: KanaMode };
 
 function Question(props: QuestionProps) {
   const { question, mode } = props;
   let displayQuestion: string;
-  if (mode === QuizMode.Romanji) {
+  if (mode === KanaMode.Romanji) {
     displayQuestion = question.ro;
-  } else if (mode === QuizMode.Katakana) {
+  } else if (mode === KanaMode.Katakana) {
     displayQuestion = question.ka;
   } else {
     displayQuestion = question.hi;

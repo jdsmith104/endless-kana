@@ -1,11 +1,11 @@
 import { IonButton } from '@ionic/react';
 import React from 'react';
 import '../theme/AnswerContainer.css';
-import { Answer } from '../models/Quiz.model';
+import KanaMode, { Answer } from '../models/Quiz.model';
 
 type AnswerContainerProps = {
   answers: Answer[];
-  mode: string;
+  mode: KanaMode;
   answerClicked: { onClick(answer: Answer): void };
 };
 
@@ -21,8 +21,9 @@ function AnswerContainer(props: AnswerContainerProps) {
           }}
           disabled={item.selected}
         >
-          {mode === 'en' && item.kana.ro}
-          {mode !== 'en' && item.kana.hi}
+          {mode === KanaMode.Romanji && item.kana.ro}
+          {mode === KanaMode.Hiragana && item.kana.hi}
+          {mode === KanaMode.Katakana && item.kana.ka}
         </IonButton>
       ))}
     </div>

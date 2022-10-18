@@ -9,7 +9,7 @@ import useQuizStats, {
   getResetAnswersFromKana,
   selectAnswer,
 } from '../controllers/Quiz.controller';
-import QuizMode, { Answer } from '../models/Quiz.model';
+import KanaMode, { Answer } from '../models/Quiz.model';
 import '../theme/Quiz.css';
 
 type QuizProps = { kanas: Kana[] };
@@ -29,7 +29,9 @@ function Quiz(props: QuizProps) {
   // Consider changing the type from Array to Map to make selectAnswer easier to read
   const [answers, setAnswers] = useState<Array<Answer>>([]);
   const [notification, setNotification] = useState('');
-  const [mode, setMode] = useState(QuizMode.Katakana);
+  const [quizMode, setQuizMode] = useState(KanaMode.Katakana);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [answerMode, setAnswerMode] = useState(KanaMode.Romanji);
 
   async function refreshQuestionAndAnswers() {
     const nextAnswers: Answer[] = await getResetAnswersFromKana(
@@ -52,12 +54,12 @@ function Quiz(props: QuizProps) {
 
   return (
     <div>
-      <Question question={solution} mode={mode} />
+      <Question question={solution} mode={quizMode} />
       <Notification notification={notification} />
 
       <AnswerContainer
         answers={answers}
-        mode="en"
+        mode={answerMode}
         answerClicked={{
           onClick(selectedAnswer: Answer): void {
             if (selectedAnswer.kana === solution) {
@@ -74,14 +76,14 @@ function Quiz(props: QuizProps) {
       <IonButton
         className="mode-toggle"
         onClick={() => {
-          if (mode === QuizMode.Katakana) {
-            setMode(QuizMode.Hiragana);
+          if (quizMode === KanaMode.Katakana) {
+            setQuizMode(KanaMode.Hiragana);
           } else {
-            setMode(QuizMode.Katakana);
+            setQuizMode(KanaMode.Katakana);
           }
         }}
       >
-        Mode: {mode}
+        Mode: {quizMode}
       </IonButton>
     </div>
   );
