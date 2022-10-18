@@ -1,4 +1,4 @@
-import LOADING_MESSAGES, { CircularBuffer } from './Loading.model';
+import LOADING_MESSAGES, { CircularBuffer } from '../models/Loading.model';
 import fisherYates, { getRandomNumber } from '../common/shuffle';
 
 let buffer = new CircularBuffer<string>(LOADING_MESSAGES, LOADING_MESSAGES.length);

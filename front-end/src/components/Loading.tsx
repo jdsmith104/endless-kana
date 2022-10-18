@@ -1,7 +1,10 @@
 import { IonSpinner } from '@ionic/react';
 import '../theme/Loading.css';
 import React, { useEffect, useState } from 'react';
-import { getNextMessage, randomiseMessages } from './Loading.controller';
+import {
+  getNextMessage,
+  randomiseMessages,
+} from '../controllers/Loading.controller';
 
 const LOADING_INTERVAL_MS = 6000;
 
