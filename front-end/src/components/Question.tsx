@@ -1,7 +1,7 @@
 import React from 'react';
-import { Kana } from '../common/kanas.model';
-import './Question.css';
-import QuizMode from './Quiz.model';
+import { Kana } from '../models/kanas.model';
+import '../theme/Question.css';
+import QuizMode from '../models/Quiz.model';
 
 type QuestionProps = { question: Kana; mode: QuizMode };
 

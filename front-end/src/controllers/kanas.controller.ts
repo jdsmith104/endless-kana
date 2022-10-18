@@ -1,4 +1,4 @@
-import type { Kana } from './kanas.model';
+import type { Kana } from '../models/kanas.model';
 
 const STATUS_SUCCCESS: number = 200;
 

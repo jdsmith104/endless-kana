@@ -1,6 +1,6 @@
 import { IonButton } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
-import { emptyKana, Kana } from '../common/kanas.model';
+import { emptyKana, Kana } from '../models/kanas.model';
 import { getRandomNumber } from '../common/shuffle';
 import Question from './Question';
 import AnswerContainer from './AnswerContainer';
@@ -8,9 +8,9 @@ import Notification from './Notification';
 import useQuizStats, {
   getResetAnswersFromKana,
   selectAnswer,
-} from './Quiz.controller';
-import QuizMode, { Answer } from './Quiz.model';
-import './Quiz.css';
+} from '../controllers/Quiz.controller';
+import QuizMode, { Answer } from '../models/Quiz.model';
+import '../theme/Quiz.css';
 
 type QuizProps = { kanas: Kana[] };
 
