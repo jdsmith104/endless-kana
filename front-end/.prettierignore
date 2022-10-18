@@ -1,6 +1,7 @@
 # Ignore artifacts:
 build
 coverage
+fb_public
 
 **/*.js
 src/service-worker.ts

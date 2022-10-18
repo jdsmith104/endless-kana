@@ -3,6 +3,7 @@ import './Home.css';
 import React, { useEffect } from 'react';
 import Quiz from '../components/Quiz';
 import useStorage from '../hooks/useStorage';
+import Loading from '../components/Loading';
 
 const Home = function Home() {
   // Constructor
@@ -14,7 +15,7 @@ const Home = function Home() {
   if (kanas.length > 0) {
     pageContent = <Quiz kanas={kanas} />;
   } else {
-    pageContent = <h1>There has been a problem</h1>;
+    pageContent = <Loading />;
   }
 
   return (
