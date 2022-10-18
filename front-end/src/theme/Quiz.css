@@ -1,5 +1,5 @@
 .mode-toggle {
-  margin-top: 20px;
+  margin-top: 10px;
   --background: var(--custom-primary);
   color: var(--custom-accent);
 }
