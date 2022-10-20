@@ -8,6 +8,7 @@ import Notification from './Notification';
 import useQuizStats, {
   getResetAnswersFromKana,
   selectAnswer,
+  setAnswerButtonHighlight,
 } from '../controllers/Quiz.controller';
 import KanaMode, { Answer } from '../models/Quiz.model';
 import '../theme/Quiz.css';
@@ -18,8 +19,12 @@ const CHOICES_COUNT = 4;
 
 const NOTIFICATIONS = {
   'New question': 'Try this new question',
+  'Correct answer': 'Correct!',
   Retry: 'Wrong! Try something else ;)',
 };
+
+const correctAnswerDelayMs = 1000;
+const incorrectAnswerDelayMs = 500;
 
 function Quiz(props: QuizProps) {
   const { kanas } = props;
@@ -63,12 +68,30 @@ function Quiz(props: QuizProps) {
         answerClicked={{
           onClick(selectedAnswer: Answer): void {
             if (selectedAnswer.kana === solution) {
-              refreshQuestionAndAnswers();
+              // Highlight correct answer
+              setAnswerButtonHighlight(selectedAnswer.kana, true);
+              setNotification(NOTIFICATIONS['Correct answer']);
+
+              // Instantly record stat
               answerCorrect(selectedAnswer.kana);
-            } else {
+
+              // Disable button
               selectAnswer(selectedAnswer, answers);
-              setNotification(NOTIFICATIONS.Retry);
+
+              setTimeout(() => {
+                // Enable or disable the highlight on the button
+                setAnswerButtonHighlight(selectedAnswer.kana, false);
+                refreshQuestionAndAnswers();
+              }, correctAnswerDelayMs);
+            } else {
+              // Instantly record stat
               answerNotCorrect();
+              // Disable button
+              selectAnswer(selectedAnswer, answers);
+
+              setTimeout(() => {
+                setNotification(NOTIFICATIONS.Retry);
+              }, incorrectAnswerDelayMs);
             }
           },
         }}

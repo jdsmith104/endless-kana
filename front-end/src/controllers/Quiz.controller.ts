@@ -61,5 +61,18 @@ function selectAnswer(selectedAnswer: Answer, answers: Answer[]) {
   }
 }
 
+function setAnswerButtonHighlight(kana:Kana, highlightOn: boolean): void {
+  const element = document.getElementById(kana.ro);
+  let backgroundColour: string;
+  if (element) {
+    if (highlightOn) {
+      backgroundColour = 'var(--custom-secondary';
+    } else {
+      backgroundColour = 'var(--custom-accent)';
+    }
+    element.style.setProperty('--background', backgroundColour);
+  }
+}
+
 export default useQuizStats;
-export { getResetAnswersFromKana, selectAnswer };
+export { getResetAnswersFromKana, selectAnswer, setAnswerButtonHighlight };

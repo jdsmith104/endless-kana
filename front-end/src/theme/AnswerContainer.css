@@ -6,4 +6,12 @@
   color: var(--custom-primary);
   --background: var(--custom-accent);
   --box-shadow: 0 2px 6px 0 rgb(0, 0, 0, 0.25);
+  /* When button is held and the cursor */
+  --background-activated: var(--custom-secondary);
+  --background-activated-opacity: 1;
+}
+
+ion-button.button-disabled {
+  /* --background: var(--custom-accent); */
+  --opacity: 1;
 }

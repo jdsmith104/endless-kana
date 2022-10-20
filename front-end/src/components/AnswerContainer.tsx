@@ -16,6 +16,7 @@ function AnswerContainer(props: AnswerContainerProps) {
       {answers.map((item) => (
         <IonButton
           key={item.kana.ro}
+          id={item.kana.ro}
           onClick={() => {
             answerClicked.onClick(item);
           }}
