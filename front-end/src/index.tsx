@@ -1,11 +1,11 @@
 import React from 'react';
-import { render } from 'react-dom'; // <- This is the correct import // statement for React version 17
+import { render } from 'react-dom';
 import App from './App';
 
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 
-const root = document.getElementById('root'); // <- This is the //correct method call for React version 17
+const root = document.getElementById('root');
 
 render(
   <React.StrictMode>
