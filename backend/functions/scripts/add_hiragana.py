@@ -55,7 +55,7 @@ ROMANJIS = [
     'ra', 'ri', 'ru', 're', 'ro',
     'wa', 'wi',        'we', 'wo',
                 'n',
-    'ga', 'gi', 'gu', 'ge', 'go',
+    'ga', 'ji', 'gu', 'ge', 'go',
     'za', 'ji', 'zu', 'ze', 'zo',
     'da', 'di', 'du', 'de', 'do',
     'ba', 'bi', 'bu', 'be', 'bo',
