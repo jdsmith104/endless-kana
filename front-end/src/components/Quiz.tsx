@@ -24,7 +24,6 @@ const NOTIFICATIONS = {
 };
 
 const correctAnswerDelayMs = 1000;
-const incorrectAnswerDelayMs = 500;
 
 function Quiz(props: QuizProps) {
   const { kanas } = props;
@@ -46,7 +45,6 @@ function Quiz(props: QuizProps) {
     setAnswers(nextAnswers);
     setSolution(nextAnswers[getRandomNumber(CHOICES_COUNT)].kana);
     setNotification(NOTIFICATIONS['New question']);
-    // Reset all Asnwer things
   }
 
   // React hook for checking when kanas (mirror of db) has been updated
@@ -86,12 +84,11 @@ function Quiz(props: QuizProps) {
             } else {
               // Instantly record stat
               answerNotCorrect();
+
+              setNotification(NOTIFICATIONS.Retry);
+
               // Disable button
               selectAnswer(selectedAnswer, answers);
-
-              setTimeout(() => {
-                setNotification(NOTIFICATIONS.Retry);
-              }, incorrectAnswerDelayMs);
             }
           },
         }}
