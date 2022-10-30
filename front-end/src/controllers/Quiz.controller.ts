@@ -61,7 +61,7 @@ function selectAnswer(selectedAnswer: Answer, answers: Answer[]) {
   }
 }
 
-function setAnswerButtonHighlight(kana:Kana, highlightOn: boolean): void {
+function setAnswerButtonHighlight(kana: Kana, highlightOn: boolean): void {
   const element = document.getElementById(kana.ro);
   let backgroundColour: string;
   if (element) {
