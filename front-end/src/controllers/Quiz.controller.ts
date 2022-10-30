@@ -5,6 +5,11 @@ import { Answer } from '../models/Quiz.model';
 
 const DEFAULT_SELECTED = false;
 
+interface QuizStats {
+  correctAnswerSelected: (kana: Kana) => void;
+  incorrectAnswerSelected: () => void;
+}
+
 async function getResetAnswersFromKana(
   kanas: Kana[],
   numChoices: number = 4,
@@ -33,23 +38,19 @@ async function getResetAnswersFromKana(
     return [];
   }
 }
-
-function useQuizStats() {
+function useQuizStats(): QuizStats {
   const [numTries, setNumTries] = useState(0);
 
-  function answerNotCorrect() {
+  function incorrectAnswerSelected() {
     setNumTries(numTries + 1);
   }
 
-  function answerCorrect(kana: Kana) {
+  function correctAnswerSelected(kana: Kana) {
     console.log(`Correctly guessed ${kana} in ${numTries} trie(0)`);
     setNumTries(0);
   }
 
-  return {
-    answerCorrect,
-    answerNotCorrect,
-  };
+  return { correctAnswerSelected, incorrectAnswerSelected };
 }
 
 function selectAnswer(selectedAnswer: Answer, answers: Answer[]) {
@@ -61,7 +62,7 @@ function selectAnswer(selectedAnswer: Answer, answers: Answer[]) {
   }
 }
 
-function setAnswerButtonHighlight(kana: Kana, highlightOn: boolean): void {
+function setHighlightOnAnswerButton(kana: Kana, highlightOn: boolean): void {
   const element = document.getElementById(kana.ro);
   let backgroundColour: string;
   if (element) {
@@ -74,5 +75,29 @@ function setAnswerButtonHighlight(kana: Kana, highlightOn: boolean): void {
   }
 }
 
+/**
+ * Refresh questions and answers using setters supplied as arguments
+ * @param kanas
+ * @param numAnswers
+ * @param setAnswers
+ * @param setSolution
+ * @param setNotification
+ * @param notification
+ */
+async function refreshQuestionAndAnswers(
+  kanas: Kana[],
+  numAnswers: number,
+  setAnswers: Function,
+  setSolution: Function,
+  setNotification: Function,
+  notification: string,
+): Promise<void> {
+  const nextAnswers: Answer[] = await getResetAnswersFromKana(kanas, numAnswers);
+  setAnswers(nextAnswers);
+  setSolution(nextAnswers[getRandomNumber(numAnswers)].kana);
+  setNotification(notification);
+}
+
 export default useQuizStats;
-export { getResetAnswersFromKana, selectAnswer, setAnswerButtonHighlight };
+export { selectAnswer, setHighlightOnAnswerButton, refreshQuestionAndAnswers };
+export type { QuizStats };

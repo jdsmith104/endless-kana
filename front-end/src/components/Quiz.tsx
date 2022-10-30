@@ -1,14 +1,14 @@
 import { IonButton } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import { emptyKana, Kana } from '../models/kanas.model';
-import { getRandomNumber } from '../common/shuffle';
 import Question from './Question';
 import AnswerContainer from './AnswerContainer';
 import Notification from './Notification';
 import useQuizStats, {
-  getResetAnswersFromKana,
+  QuizStats,
+  refreshQuestionAndAnswers,
   selectAnswer,
-  setAnswerButtonHighlight,
+  setHighlightOnAnswerButton,
 } from '../controllers/Quiz.controller';
 import KanaMode, { Answer } from '../models/Quiz.model';
 import '../theme/Quiz.css';
@@ -27,7 +27,7 @@ const correctAnswerDelayMs = 1000;
 
 function Quiz(props: QuizProps) {
   const { kanas } = props;
-  const { answerCorrect, answerNotCorrect } = useQuizStats();
+  const quizStats: QuizStats = useQuizStats();
 
   const [solution, setSolution] = useState<Kana>(emptyKana);
   // Consider changing the type from Array to Map to make selectAnswer easier to read
@@ -37,21 +37,18 @@ function Quiz(props: QuizProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [answerMode, setAnswerMode] = useState(KanaMode.Romanji);
 
-  async function refreshQuestionAndAnswers() {
-    const nextAnswers: Answer[] = await getResetAnswersFromKana(
-      kanas,
-      CHOICES_COUNT,
-    );
-    setAnswers(nextAnswers);
-    setSolution(nextAnswers[getRandomNumber(CHOICES_COUNT)].kana);
-    setNotification(NOTIFICATIONS['New question']);
-  }
-
   // React hook for checking when kanas (mirror of db) has been updated
   useEffect(() => {
     // Only refresh q&a when kanas available
     if (kanas.length > 0) {
-      refreshQuestionAndAnswers();
+      refreshQuestionAndAnswers(
+        kanas,
+        CHOICES_COUNT,
+        setAnswers,
+        setSolution,
+        setNotification,
+        NOTIFICATIONS['New question'],
+      );
     }
   }, [kanas]);
 
@@ -67,23 +64,29 @@ function Quiz(props: QuizProps) {
           onClick(selectedAnswer: Answer): void {
             if (selectedAnswer.kana === solution) {
               // Highlight correct answer
-              setAnswerButtonHighlight(selectedAnswer.kana, true);
+              setHighlightOnAnswerButton(selectedAnswer.kana, true);
               setNotification(NOTIFICATIONS['Correct answer']);
 
               // Instantly record stat
-              answerCorrect(selectedAnswer.kana);
-
+              quizStats.correctAnswerSelected(selectedAnswer.kana);
               // Disable button
               selectAnswer(selectedAnswer, answers);
 
               setTimeout(() => {
                 // Enable or disable the highlight on the button
-                setAnswerButtonHighlight(selectedAnswer.kana, false);
-                refreshQuestionAndAnswers();
+                setHighlightOnAnswerButton(selectedAnswer.kana, false);
+                refreshQuestionAndAnswers(
+                  kanas,
+                  CHOICES_COUNT,
+                  setAnswers,
+                  setSolution,
+                  setNotification,
+                  NOTIFICATIONS['New question'],
+                );
               }, correctAnswerDelayMs);
             } else {
               // Instantly record stat
-              answerNotCorrect();
+              quizStats.incorrectAnswerSelected();
 
               setNotification(NOTIFICATIONS.Retry);
 
