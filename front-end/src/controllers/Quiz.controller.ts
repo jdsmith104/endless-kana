@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Kana } from '../models/kanas.model';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { getRandomNumber } from '../common/shuffle';
 import { Answer } from '../models/Quiz.model';
 
@@ -19,8 +20,12 @@ async function getResetAnswersFromKana(
     const nextChoices: Answer[] = [];
 
     const randomIndeces: Set<number> = new Set<number>();
-    while (randomIndeces.size < numChoices) {
-      const index = getRandomNumber(kanas.length);
+    // while (randomIndeces.size < numChoices) {
+    //   const index = getRandomNumber(kanas.length);
+    //   randomIndeces.add(index);
+    // }
+
+    for (let index = 0; index < numChoices; index += 1) {
       randomIndeces.add(index);
     }
 
