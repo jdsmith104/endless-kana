@@ -16,7 +16,7 @@ async function getAndUpdateKanas(store: Storage, setKanas: Function) {
   // Added '&& storedKanas[0].hi' added to force the update on any legacy system
   if (storedKanas && storedKanas.length > 0 && storedKanas[0].hi) {
     setKanas(storedKanas);
-    console.log('Successfully read from localStorage', storedKanas);
+    console.log('Successfully read from localStorage: ', storedKanas.length);
   } else {
     const kanas: Kana[] = await getKanas();
     const ret: Kana[] = await store.set(KANAS_KEY, kanas);

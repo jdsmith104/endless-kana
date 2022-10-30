@@ -8,8 +8,9 @@ import Notification from './Notification';
 import useQuizStats, {
   getResetAnswersFromKana,
   selectAnswer,
+  setAnswerButtonHighlight,
 } from '../controllers/Quiz.controller';
-import QuizMode, { Answer } from '../models/Quiz.model';
+import KanaMode, { Answer } from '../models/Quiz.model';
 import '../theme/Quiz.css';
 
 type QuizProps = { kanas: Kana[] };
@@ -18,8 +19,11 @@ const CHOICES_COUNT = 4;
 
 const NOTIFICATIONS = {
   'New question': 'Try this new question',
+  'Correct answer': 'Correct!',
   Retry: 'Wrong! Try something else ;)',
 };
+
+const correctAnswerDelayMs = 1000;
 
 function Quiz(props: QuizProps) {
   const { kanas } = props;
@@ -29,7 +33,9 @@ function Quiz(props: QuizProps) {
   // Consider changing the type from Array to Map to make selectAnswer easier to read
   const [answers, setAnswers] = useState<Array<Answer>>([]);
   const [notification, setNotification] = useState('');
-  const [mode, setMode] = useState(QuizMode.Katakana);
+  const [quizMode, setQuizMode] = useState(KanaMode.Katakana);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [answerMode, setAnswerMode] = useState(KanaMode.Romanji);
 
   async function refreshQuestionAndAnswers() {
     const nextAnswers: Answer[] = await getResetAnswersFromKana(
@@ -39,7 +45,6 @@ function Quiz(props: QuizProps) {
     setAnswers(nextAnswers);
     setSolution(nextAnswers[getRandomNumber(CHOICES_COUNT)].kana);
     setNotification(NOTIFICATIONS['New question']);
-    // Reset all Asnwer things
   }
 
   // React hook for checking when kanas (mirror of db) has been updated
@@ -52,21 +57,38 @@ function Quiz(props: QuizProps) {
 
   return (
     <div>
-      <Question question={solution} mode={mode} />
+      <Question question={solution} mode={quizMode} />
       <Notification notification={notification} />
 
       <AnswerContainer
         answers={answers}
-        mode="en"
+        mode={answerMode}
         answerClicked={{
           onClick(selectedAnswer: Answer): void {
             if (selectedAnswer.kana === solution) {
-              refreshQuestionAndAnswers();
+              // Highlight correct answer
+              setAnswerButtonHighlight(selectedAnswer.kana, true);
+              setNotification(NOTIFICATIONS['Correct answer']);
+
+              // Instantly record stat
               answerCorrect(selectedAnswer.kana);
-            } else {
+
+              // Disable button
               selectAnswer(selectedAnswer, answers);
-              setNotification(NOTIFICATIONS.Retry);
+
+              setTimeout(() => {
+                // Enable or disable the highlight on the button
+                setAnswerButtonHighlight(selectedAnswer.kana, false);
+                refreshQuestionAndAnswers();
+              }, correctAnswerDelayMs);
+            } else {
+              // Instantly record stat
               answerNotCorrect();
+
+              setNotification(NOTIFICATIONS.Retry);
+
+              // Disable button
+              selectAnswer(selectedAnswer, answers);
             }
           },
         }}
@@ -74,14 +96,14 @@ function Quiz(props: QuizProps) {
       <IonButton
         className="mode-toggle"
         onClick={() => {
-          if (mode === QuizMode.Katakana) {
-            setMode(QuizMode.Hiragana);
+          if (quizMode === KanaMode.Katakana) {
+            setQuizMode(KanaMode.Hiragana);
           } else {
-            setMode(QuizMode.Katakana);
+            setQuizMode(KanaMode.Katakana);
           }
         }}
       >
-        Mode: {mode}
+        Mode: {quizMode}
       </IonButton>
     </div>
   );

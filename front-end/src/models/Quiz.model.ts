@@ -1,6 +1,6 @@
 import { Kana } from './kanas.model';
 
-enum QuizMode {
+enum KanaMode {
   Romanji = 'Romanji',
   Katakana = 'Katakana',
   Hiragana = 'Hiragana',
@@ -11,5 +11,5 @@ type Answer = {
   selected: boolean;
 };
 
-export default QuizMode;
+export default KanaMode;
 export type { Answer };
