@@ -4,6 +4,29 @@ import getKanas from '../controllers/kanas.controller';
 import { Kana } from '../models/kanas.model';
 
 const KANAS_KEY = 'kanas';
+const LAST_CLIENT_SERVER_UPDATE_KEY = 'lsuk';
+const LAST_CLIENT_SERVER_UPDATE_TIME = 1667299362942;
+
+/**
+ * Description Check if kana should be loaded from the store based on the last server update.
+ * @param {Storage} store
+ * @returns {Promise<boolean>} true if kana should be loaded from local store
+ */
+async function shouldUseKanaInStore(store: Storage): Promise<boolean> {
+  const lastClientServerUpdateTime = await store.get(LAST_CLIENT_SERVER_UPDATE_KEY);
+  if (
+    lastClientServerUpdateTime &&
+    lastClientServerUpdateTime >= LAST_CLIENT_SERVER_UPDATE_TIME
+  ) {
+    // Do nothing
+    return true;
+  }
+  // Update store
+  // Set get update boolean
+
+  await store.set(LAST_CLIENT_SERVER_UPDATE_KEY, LAST_CLIENT_SERVER_UPDATE_TIME);
+  return false;
+}
 
 /**
  * Read 'kanas' from store and write to UI using setKanas. If store is empty,
@@ -12,9 +35,10 @@ const KANAS_KEY = 'kanas';
  * @param setKanas the function to set kanas
  */
 async function getAndUpdateKanas(store: Storage, setKanas: Function) {
+  const useKanaInLocalStore = await shouldUseKanaInStore(store);
   const storedKanas: Kana[] = await store.get(KANAS_KEY);
   // Added '&& storedKanas[0].hi' added to force the update on any legacy system
-  if (storedKanas && storedKanas.length > 0 && storedKanas[0].hi) {
+  if (storedKanas && useKanaInLocalStore && storedKanas.length > 0) {
     setKanas(storedKanas);
     console.log('Successfully read from localStorage: ', storedKanas.length);
   } else {
