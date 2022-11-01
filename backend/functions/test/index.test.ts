@@ -34,7 +34,7 @@ function getFirestore(): any {
   return {
     collection: (path: string) => {
       if (throwCollectionError) {
-        throw new Error("");
+        throw new Error('');
       }
       collection = new MockCollection(path, mockDB);
       return collection;
@@ -103,12 +103,19 @@ describe('addKana', () => {
 
   test('It returns an error message', async () => {
     const expectedStatus = HTPPResponseStatus.OK;
-    const expectedResult = 'Request invalid: kana not added';
+    const expectedError = {
+      error: 'Request invalid',
+      message: 'Kana not added',
+      detail: '',
+    };
 
     await cloudFunctions.addKana(req as any, res as any);
 
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualJSON['result']).toBe(expectedResult);
+
+    expect(actualJSON.error).toBe(expectedError.error);
+    expect(actualJSON.message).toBe(expectedError.message);
+    expect(actualJSON.detail).toBe(expectedError.detail);
   });
 
   test('It returns a success message', async () => {
@@ -134,18 +141,24 @@ describe('addKana', () => {
     expect(actualStatus).toBe(expectedStatus);
   });
 
-
   test('It handles errors', async () => {
     throwCollectionError = true;
 
     req.query = {ro: 'hi', hi: 'ひ', ka: 'ヒ'};
 
     const expectedStatus = HTPPResponseStatus.FAILED;
-    const expectedResult = "Unable to add kana";
+    const expectedError = {
+      error: 'Server error',
+      message: 'Unable to add kana',
+      detail: '',
+    };
 
     await cloudFunctions.addKana(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualJSON.result).toBe(expectedResult);
+
+    expect(actualJSON.error).toBe(expectedError.error);
+    expect(actualJSON.message).toBe(expectedError.message);
+    expect(actualJSON.detail).toBe(expectedError.detail);
   });
 });
 
@@ -175,17 +188,23 @@ describe('getKanas', () => {
   });
 
   test('It handles errors', async () => {
-
     throwCollectionError = true;
 
     // Set mockDB to default type
     mockDB.set(kanaCollectionName, exampleDocumentArray);
 
     const expectedStatus = HTPPResponseStatus.FAILED;
-    const expectedResult = "Unable to get kanas";
+    const expectedError = {
+      error: 'Server error',
+      message: 'Unable to get kanas',
+      detail: '',
+    };
 
     await cloudFunctions.getKanas(req as any, res as any);
     expect(actualStatus).toBe(expectedStatus);
-    expect(actualJSON.result).toBe(expectedResult);
+
+    expect(actualJSON.error).toBe(expectedError.error);
+    expect(actualJSON.message).toBe(expectedError.message);
+    expect(actualJSON.detail).toBe(expectedError.detail);
   });
 });
