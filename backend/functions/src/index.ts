@@ -6,7 +6,7 @@ import type {Kana} from './kanaModel';
 
 // The Firebase Admin SDK to access Firestore.
 import {db} from './config/firebase';
-import HTPPResponseStatus from './httpResponseStatus';
+import HTPPResponseStatus, {createErrorResponse} from './httpResponseStatus';
 
 const kanaCollectionName = 'kanasv2';
 
@@ -32,13 +32,11 @@ exports.addKana = functions.https.onRequest(async (req: Request, res: Response) 
       }
     } else {
       res.status(HTPPResponseStatus.OK);
-      res.json({
-        result: 'Request invalid: kana not added',
-      });
+      res.json(createErrorResponse('Request invalid', 'Kana not added'));
     }
   } catch (error: unknown) {
     res.status(HTPPResponseStatus.FAILED);
-    res.json({result: 'Unable to add kana'});
+    res.json(createErrorResponse('Server error', 'Unable to add kana'));
   }
 });
 
@@ -63,12 +61,12 @@ exports.getKanas = functions.https.onRequest(async (req: Request, res: Response)
     res.json({result: kanas});
   } catch (error: unknown) {
     res.status(HTPPResponseStatus.FAILED);
-    res.json({result: 'Unable to get kanas'});
+    res.json(createErrorResponse('Server error', 'Unable to get kanas'));
   }
 });
 
 /**
- * Represents a book.
+ * Check if query has valid parameters.
  * @constructor
  * @param {ParsedQs} query - The query
  */

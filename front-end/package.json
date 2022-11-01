@@ -49,7 +49,7 @@
     "eject": "react-scripts eject",
     "lint": "eslint .",
     "tidy": "prettier --write .",
-    "deploy-test": "yarn build && rm -rf fb_public && mv build fb_public && firebase hosting:channel:deploy testing --expires 1h",
+    "deploy-test": "yarn build && rm -rf fb_public && mv build fb_public && firebase hosting:channel:deploy testing --expires 20h",
     "clone-test": "firebase hosting:clone endless-kana:testing endless-kana:live"
   },
   "eslintConfig": {
